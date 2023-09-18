@@ -1,21 +1,41 @@
 import React from 'react';
-import { Text, SafeAreaView, View, TouchableOpacity } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { Text, SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
 
-const MainOptionsContainer = ({ sDim, wDim }) => {
+const MainOptionsContainer = ({ navigation, navTitle, sDim, wDim, icon, title }) => {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress = { () => navigation.navigate('ComponentView', { screen : navTitle }) }>
         <View style = {{
-            width         : (wDim.width * 0.46),
-            height        : (wDim.width * 0.44),
-            margin        : (wDim.width * 0.013),
-            shadowColor   : 'white',
-            shadowOpacity : 0.3,
-            elevation     : 4
+            width           : (wDim.width * 0.46),
+            height          : (wDim.width * 0.32),
+            margin          : (wDim.width * 0.013),
+            display         : 'flex',
+            alignItems      : 'center',
+            justifyContent  : 'center',
+            backgroundColor : '#F2F3F4',
+            borderWidth     : 1,
+            borderColor     : 'green',
+            padding         : 3
         }}>
-            <Text>Hello, World</Text>
+          <View style = {{ marginBottom : 10 }}>
+            <FontAwesomeIcon icon={ icon } size = { (wDim.width * 0.18) } />
+          </View>
+          <View>
+            <Text style = { style.textStyle }>
+                { title }
+            </Text>
+          </View>
         </View>
     </TouchableOpacity>
   );
 }
+
+const style = StyleSheet.create({
+  textStyle : {
+    color      : '#2C3E50', 
+    textAlign  : 'center', 
+    fontFamily : 'times new roman',
+  }
+})
 
 export default MainOptionsContainer;

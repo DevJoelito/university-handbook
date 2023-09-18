@@ -1,52 +1,97 @@
 import React from 'react';
-import { StyleSheet, SafeAreaView, View } from 'react-native';
+import { StyleSheet, SafeAreaView, ScrollView, View } from 'react-native';
 import EvsuHeader from './sub/EvsuHeader';
 import MainOptionsContainer from './sub/MainOptionsContainer';
+import { 
+  faBookOpen, 
+  faChalkboardTeacher, 
+  faUserFriends, 
+  faMap,      
+  faGlobe,             
+  faGraduationCap, 
+  faBook, 
+  faInfo } from '@fortawesome/free-solid-svg-icons'; 
 
-const Main = ({ sDim, wDim }) => {
+const Main = ({ navigation, sDim, wDim }) => {
   return (
-    <SafeAreaView
-      style = {{
-        flex : 1,
-      }}
-    >
+    <SafeAreaView style = {{ flex : 1 }}>
       <EvsuHeader 
         sDim = { sDim }
         wDim = { wDim } />
-      <View style = {{ 
-        flex : 1, 
-        borderWidth : 1,
-        borderColor : 'green',
-        display     : 'flex',
-        alignItems  : 'center',
-        paddingTop  : (sDim.width * 0.03) }} >
-        <View style = { styles.subConProps }>
-          <MainOptionsContainer 
-            sDim = { sDim } 
-            wDim = { wDim } />
-          <MainOptionsContainer 
-            sDim = { sDim } 
-            wDim = { wDim } />
-        </View>
+      <ScrollView>
+        <View style = {{ 
+          display    : 'flex',
+          alignItems : 'center',
+          paddingTop : (sDim.width * 0.03) }} >
+          <View style = { styles.subConProps }>
+            <MainOptionsContainer 
+              navigation = { navigation }
+              sDim       = { sDim } 
+              wDim       = { wDim }
+              icon       = { faBookOpen }
+              title      = 'Handbook'
+              navTitle   = 'HandBookView' />
+            <MainOptionsContainer
+              navigation = { navigation } 
+              sDim       = { sDim } 
+              wDim       = { wDim } 
+              icon       = { faChalkboardTeacher }
+              title      = 'Program Offered'
+              navTitle   = 'ProgOfferedView' />
+          </View>
 
-        <View style = { styles.subConProps }>
-          <MainOptionsContainer 
-            sDim = { sDim } 
-            wDim = { wDim } />
-          <MainOptionsContainer 
-            sDim = { sDim } 
-            wDim = { wDim } />
-        </View>
+          <View style = { styles.subConProps }>
+            <MainOptionsContainer
+              navigation = { navigation } 
+              sDim       = { sDim } 
+              wDim       = { wDim } 
+              icon       = { faUserFriends } 
+              title      = 'Organizational Chart'
+              navTitle   = 'OrgChartView' />
+            <MainOptionsContainer 
+              navigation = { navigation }
+              sDim       = { sDim } 
+              wDim       = { wDim } 
+              icon       = { faMap } 
+              title      = 'EVSU OC Map'
+              navTitle   = 'MapView' />
+          </View>
 
-        <View style = { styles.subConProps }>
-          <MainOptionsContainer 
-            sDim = { sDim } 
-            wDim = { wDim } />
-          <MainOptionsContainer 
-            sDim = { sDim } 
-            wDim = { wDim } />
+          <View style = { styles.subConProps }>
+            <MainOptionsContainer
+              navigation = { navigation } 
+              sDim       = { sDim } 
+              wDim       = { wDim } 
+              icon       = { faGlobe }
+              title      = 'EVSU OC Links'
+              navTitle   = 'LinkView' />
+            <MainOptionsContainer 
+              navigation = { navigation } 
+              sDim       = { sDim } 
+              wDim       = { wDim } 
+              icon       = { faGraduationCap } 
+              title      = 'Mission/Vission & Hymn'
+              navTitle   = 'MissVissHymnView' />
+          </View>
+
+          <View style = { styles.subConProps }>
+            <MainOptionsContainer 
+              navigation = { navigation }
+              sDim       = { sDim } 
+              wDim       = { wDim } 
+              icon       = { faBook } 
+              title      = 'Events'
+              navTitle   = 'EventsView' />
+            <MainOptionsContainer
+              navigation = { navigation } 
+              sDim       = { sDim } 
+              wDim       = { wDim } 
+              icon       = { faInfo }
+              title      = 'About Us'
+              navTitle   = 'AboutUsView' />
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

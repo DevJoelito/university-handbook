@@ -2,11 +2,11 @@
   "migIndex": 1,
   "data": [
     {
-      "path": "assets/fonts/KINDGARG.TTF",
+      "path": "assets/fonts/Kindersley Grand Arcade.TTF",
       "sha1": "dbf48643499eccc65e53e891c6c8064f252a39d5"
     },
     {
-      "path": "assets/fonts/KINDGSFR.TTF",
+      "path": "assets/fonts/KindersleyGA OldStyleFigure.TTF",
       "sha1": "d231f6805b9c2f259ed6178b613a6087e131e5a0"
     }
   ]

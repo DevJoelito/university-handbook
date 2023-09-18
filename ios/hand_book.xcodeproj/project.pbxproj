@@ -14,8 +14,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-hand_book-hand_bookTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-hand_book-hand_bookTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		C65288548E3B4568867E717E /* KINDGARG.TTF in Resources */ = {isa = PBXBuildFile; fileRef = FF5CEA68EDF54E73AE3E830C /* KINDGARG.TTF */; };
-		6BCCDB15448C4D3DB969DA15 /* KINDGSFR.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 7DA8E4C8F03D44CD99D7FD7B /* KINDGSFR.TTF */; };
+		A3079D2A89644033B5578063 /* Kindersley Grand Arcade.TTF in Resources */ = {isa = PBXBuildFile; fileRef = A3B3857E3D624310BDA467C0 /* Kindersley Grand Arcade.TTF */; };
+		39BD6DE3502242CC89245946 /* KindersleyGA OldStyleFigure.TTF in Resources */ = {isa = PBXBuildFile; fileRef = AF589FBD0C364BB19979E6D9 /* KindersleyGA OldStyleFigure.TTF */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,8 +46,8 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = hand_book/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-hand_book-hand_bookTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hand_book-hand_bookTests.release.xcconfig"; path = "Target Support Files/Pods-hand_book-hand_bookTests/Pods-hand_book-hand_bookTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FF5CEA68EDF54E73AE3E830C /* KINDGARG.TTF */ = {isa = PBXFileReference; name = "KINDGARG.TTF"; path = "../assets/fonts/KINDGARG.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7DA8E4C8F03D44CD99D7FD7B /* KINDGSFR.TTF */ = {isa = PBXFileReference; name = "KINDGSFR.TTF"; path = "../assets/fonts/KINDGSFR.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A3B3857E3D624310BDA467C0 /* Kindersley Grand Arcade.TTF */ = {isa = PBXFileReference; name = "Kindersley Grand Arcade.TTF"; path = "../assets/fonts/Kindersley Grand Arcade.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AF589FBD0C364BB19979E6D9 /* KindersleyGA OldStyleFigure.TTF */ = {isa = PBXFileReference; name = "KindersleyGA OldStyleFigure.TTF"; path = "../assets/fonts/KindersleyGA OldStyleFigure.TTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,8 +156,8 @@
 		669FA73123F04CE6B6AB1B3E /* Resources */ = {
 			isa = "PBXGroup";
 			children = (
-				FF5CEA68EDF54E73AE3E830C /* KINDGARG.TTF */,
-				7DA8E4C8F03D44CD99D7FD7B /* KINDGSFR.TTF */,
+				A3B3857E3D624310BDA467C0 /* Kindersley Grand Arcade.TTF */,
+				AF589FBD0C364BB19979E6D9 /* KindersleyGA OldStyleFigure.TTF */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -259,8 +259,8 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				C65288548E3B4568867E717E /* KINDGARG.TTF in Resources */,
-				6BCCDB15448C4D3DB969DA15 /* KINDGSFR.TTF in Resources */,
+				A3079D2A89644033B5578063 /* Kindersley Grand Arcade.TTF in Resources */,
+				39BD6DE3502242CC89245946 /* KindersleyGA OldStyleFigure.TTF in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
