@@ -1,6 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
-import { Dimensions, Text, View } from 'react-native';
+import { Dimensions, Text, View, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Main from './components/Main';
@@ -12,6 +11,8 @@ import Links from './components/Links';
 import MissVissHymn from './components/MissVissHymn';
 import Events from './components/Events';
 import AboutUs from './components/AboutUs';
+import ChaptersView from './components/ChaptersView';
+import AppHeaderLogo from './components/sub/AppHeaderLogo';
 import { NavigationContainer } from '@react-navigation/native';
 
 const screen = Dimensions.get('screen');
@@ -99,6 +100,16 @@ const AboutUsView = ({ navigation }) => {
   );
 }
 
+const ChaptersViewView = ({ navigation }) => {
+  return (
+    <ChaptersView
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
+    />
+  );
+}
+
 const MainView = ({ navigation }) => {
   return (
     <Main
@@ -109,42 +120,119 @@ const MainView = ({ navigation }) => {
   );
 }
 
-const ComponentView = () => {
+
+const ComponentView = ({ route }) => {
   return (
     <Drawer.Navigator 
       backBehavior = 'history'>
       <Drawer.Screen 
         name      = "HandBookView"
         component = { HandBookView } 
-        options   = {{ headerTitle : 'Hand Book' }} />
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'Handbook' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          }
+        }} />
       <Drawer.Screen 
         name      = "ProgOfferedView"
         component = { ProgOfferedView }
-        options   = {{ headerTitle : 'Program Offered' }} />
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'Program Offered' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          }
+        }} />
       <Drawer.Screen 
         name      = "OrgChartView"
         component = { OrgChartView } 
-        options   = {{ headerTitle : 'Organizational Chart' }} />
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'Organizational Chart' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          }
+        }} />
       <Drawer.Screen 
         name      = "MapView"
         component = { MapView }
-        options   = {{ headerTitle : 'EVSU OC Map' }} />
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'EVSU OC Map' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          }
+        }} />
       <Drawer.Screen 
         name      = "LinkView"
         component = { LinkView }
-        options   = {{ headerTitle : 'EVSU OC Links' }} />
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'EVSU OC Links' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          }
+        }} />
       <Drawer.Screen 
         name      = "MissVissHymnView"
         component = { MissVissHymnView }
-        options   = {{ headerTitle : 'Missing/Vissions & Hymns' }} />
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'Mission/Vission & Hymn' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          }
+        }} />
       <Drawer.Screen 
         name      = "EventsView"
         component = { EventsView }
-        options   = {{ headerTitle : 'Events' }} />
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'Events' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          }
+        }} />
       <Drawer.Screen 
         name      = "AboutUsView"
         component = { AboutUsView }
-        options   = {{ headerTitle : 'About Us' }} />
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'About Us' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          }
+        }} />
+      <Drawer.Screen 
+        name      = "ChaptersView"
+        component = { ChaptersViewView }
+        options   = {{ 
+          headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = { route.params.title } />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          },
+          drawerItemStyle   : { display : 'none' }
+        }} />
+    </Drawer.Navigator>
+  )
+}
+
+const SubComponentView = () => {
+  return (
+    <Drawer.Navigator>
+
     </Drawer.Navigator>
   )
 }

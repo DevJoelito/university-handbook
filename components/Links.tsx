@@ -1,8 +1,7 @@
-import React from 'react';
 import { Text, View } from 'react-native';
 
 
-const Links = () => {
+const Links = ({}) => {
   return (
     <View>
         <Text>EVSU Link</Text>

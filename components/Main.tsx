@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet, SafeAreaView, ScrollView, View } from 'react-native';
 import EvsuHeader from './sub/EvsuHeader';
 import MainOptionsContainer from './sub/MainOptionsContainer';

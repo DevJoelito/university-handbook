@@ -1,6 +1,5 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { Text, SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 
 const MainOptionsContainer = ({ navigation, navTitle, sDim, wDim, icon, title }) => {
   return (
