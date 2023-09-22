@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { ScrollView, TouchableOpacity, SafeAreaView, Text, View } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp';
@@ -6,15 +7,20 @@ import Tts from 'react-native-tts';
 Tts.setDucking(true);
 Tts.setDefaultRate(0.25);
 
-const textSpeak = async(text) => {
+const textSpeak = async(text, speak) => {
   let state = await Tts.getInitStatus();
 
-  if(state == 'success') {
+  if(state == 'success' && speak) {
     Tts.speak(text);
+  } else {
+    Tts.stop();
   }
 }
-
+ 
 const Links = ({ navigation, sDim, wDim }) => {
+  // const [speak, setSpeak] = useState(false);
+  let speak = true; 
+
   return (
     <SafeAreaView style = {{flex : 1, backgroundColor: '#F7EFEF' }}>
         <View style = {{ 
@@ -25,7 +31,10 @@ const Links = ({ navigation, sDim, wDim }) => {
           justifyContent  : 'center'
          }}>
           <TouchableOpacity
-            onPress = { () => textSpeak('SAMPLE TEXT UWU') }>
+            onPress = { () => {
+              speak = !speak;
+              textSpeak('Sample Text UWU', speak);
+            } }>
             <FontAwesomeIcon icon = { faVolumeUp } size = { sDim.height * 0.04 } color='#710000' />
           </TouchableOpacity>
         </View>
