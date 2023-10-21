@@ -14,7 +14,7 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim }) => {
       }}
       onPress = { () => navigation.navigate('ComponentView', { screen : 'ChaptersView', title }) }>
       <View style = {{ marginLeft : (wDim.width * 0.05), marginRight : (wDim.width * 0.05) }}>
-        <FontAwesomeIcon icon={ faBookmark } size = { sDim.height * 0.05 } color='#710000' />
+        <FontAwesomeIcon icon={ faBookmark } size = { sDim.height * 0.05 } color = '#710000' />
       </View>
       <View>
         <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.028) }}>

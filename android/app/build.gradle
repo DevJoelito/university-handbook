@@ -88,6 +88,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('my-upload-key.keystore')
+            storePassword 'Waifus'
+            keyAlias 'my-key-alias'
+            keyPassword 'Waifus'
+        }
     }
     buildTypes {
         debug {

@@ -24,7 +24,7 @@ const EvsuHeader = ({ sDim, wDim }) => {
                 height : (wDim.height * 0.09),
                 width  : (wDim.height * 0.09),
               }}
-              source = { require('../../src/images/the-evsu-logo.png') } />
+              source = { require('../../assets/images/the-evsu-logo.png') } />
           </View>
           <View style = {{ 
             position : 'absolute', 
@@ -36,7 +36,7 @@ const EvsuHeader = ({ sDim, wDim }) => {
                 width  : (wDim.width * 0.6),
                 resizeMode : 'stretch'
               }}
-              source = { require('../../src/images/main-text.png') } />
+              source = { require('../../assets/images/main-text.png') } />
           </View>
           <View style= {{ 
             position : 'absolute', 

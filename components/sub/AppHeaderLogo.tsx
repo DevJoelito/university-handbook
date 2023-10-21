@@ -24,7 +24,7 @@ const AppHeaderLogo = ({ sDim, title }) => {
         right    : (sDim.width * 0.011) }}>
         <Image
           style  = {{ width : (sDim.width * 0.125), height : (sDim.width * 0.125) }}
-          source = { require('../../src/images/the-evsu-logo.png') }
+          source = { require('../../assets/images/the-evsu-logo.png') }
         />
       </View>
     </View>
