@@ -12,9 +12,12 @@ const MainOptionsContainer = ({ navigation, navTitle, sDim, wDim, icon, title })
             alignItems      : 'center',
             justifyContent  : 'center',
             backgroundColor : '#F2F3F4',
-            borderWidth     : 1,
-            borderColor     : 'green',
-            padding         : 3
+            padding         : 3,
+            shadowColor     : '#000',
+            shadowOffset    : { width: 1, height: 1 },
+            shadowOpacity   : 3,
+            shadowRadius    : 10,
+            elevation       : 5,
         }}>
           <View style = {{ marginBottom : 10 }}>
             <FontAwesomeIcon icon={ icon } size = { (wDim.width * 0.18) } />

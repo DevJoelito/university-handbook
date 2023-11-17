@@ -8,7 +8,7 @@ import ProgOffered from './components/ProgOffered';
 import OrgChart from './components/OrgChart';
 import Map from './components/Map';
 import Links from './components/Links';
-import MissVissHymn from './components/MissVissHymn';
+import MissVissHymn from './components/MissVisHymn';
 import Events from './components/Events';
 import AboutUs from './components/AboutUs';
 import ChaptersView from './components/ChaptersView';
@@ -19,6 +19,16 @@ const screen = Dimensions.get('screen');
 const window = Dimensions.get('window');
 const Stack  = createStackNavigator();
 const Drawer = createDrawerNavigator();
+
+const MainView = ({ navigation }) => {
+  return (
+    <Main
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
+    />
+  );
+}
 
 const HandBookView = ({ navigation }) => {
   return (
@@ -110,21 +120,19 @@ const ChaptersViewView = ({ navigation }) => {
   );
 }
 
-const MainView = ({ navigation }) => {
-  return (
-    <Main
-      sDim       = { screen }
-      wDim       = { window }
-      navigation = { navigation }
-    />
-  );
-}
-
 
 const ComponentView = ({ route }) => {
   return (
     <Drawer.Navigator 
-      backBehavior = 'history'>
+      backBehavior = 'firstRoute'>
+      <Drawer.Screen 
+        name      = "MainView"
+        component = { MainView } 
+        options   = {{ 
+          drawerLabel : 'Home',
+          headerShown : false,
+          backBehavior : 'firstRoute'
+        }} />
       <Drawer.Screen 
         name      = "HandBookView"
         component = { HandBookView } 
@@ -134,18 +142,21 @@ const ComponentView = ({ route }) => {
                                 title = 'Handbook' />,  
           headerStyle : {
             backgroundColor : '#710000',
-          }
+          },
+          drawerLabel : 'Handbook'
         }} />
       <Drawer.Screen 
         name      = "ProgOfferedView"
         component = { ProgOfferedView }
+        backBehavior = 'firstRoute'
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
                                 title = 'Program Offered' />,  
           headerStyle : {
             backgroundColor : '#710000',
-          }
+          },
+          drawerLabel : 'Program Offered'
         }} />
       <Drawer.Screen 
         name      = "OrgChartView"
@@ -156,7 +167,8 @@ const ComponentView = ({ route }) => {
                                 title = 'Organizational Chart' />,  
           headerStyle : {
             backgroundColor : '#710000',
-          }
+          },
+          drawerLabel : 'Organizational Chart'
         }} />
       <Drawer.Screen 
         name      = "MapView"
@@ -167,7 +179,8 @@ const ComponentView = ({ route }) => {
                                 title = 'EVSU OC Map' />,  
           headerStyle : {
             backgroundColor : '#710000',
-          }
+          },
+          drawerLabel : 'EVSU OC Map'
         }} />
       <Drawer.Screen 
         name      = "LinkView"
@@ -178,7 +191,8 @@ const ComponentView = ({ route }) => {
                                 title = 'EVSU OC Links' />,  
           headerStyle : {
             backgroundColor : '#710000',
-          }
+          }, 
+          drawerLabel : 'EVSU OC Links'
         }} />
       <Drawer.Screen 
         name      = "MissVissHymnView"
@@ -189,7 +203,8 @@ const ComponentView = ({ route }) => {
                                 title = 'Mission/Vission & Hymn' />,  
           headerStyle : {
             backgroundColor : '#710000',
-          }
+          }, 
+          drawerLabel : 'Mission/Vission & Hymn'
         }} />
       <Drawer.Screen 
         name      = "EventsView"
@@ -200,7 +215,8 @@ const ComponentView = ({ route }) => {
                                 title = 'Events' />,  
           headerStyle : {
             backgroundColor : '#710000',
-          }
+          },
+          drawerLabel : 'Events'
         }} />
       <Drawer.Screen 
         name      = "AboutUsView"
@@ -211,7 +227,8 @@ const ComponentView = ({ route }) => {
                                 title = 'About Us' />,  
           headerStyle : {
             backgroundColor : '#710000',
-          }
+          },
+          drawerLabel : 'About Us'
         }} />
       <Drawer.Screen 
         name      = "ChaptersView"
@@ -241,10 +258,6 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen 
-          name      = "MainView" 
-          component = { MainView } 
-          options   = {{ headerShown : false }} />
         <Stack.Screen 
           name      = "ComponentView"
           component = { ComponentView } 

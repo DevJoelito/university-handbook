@@ -1,21 +1,21 @@
 import { FlatList, SafeAreaView, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import HandBookChapterCon from './sub/HandBookChapterCon';
-import Tts from 'react-native-tts';
+import HandBookChapterCon from './sub/MissVisHymnContainer';
+// import Tts from 'react-native-tts';
 
-Tts.setDucking(true);
-Tts.setDefaultRate(0.25);
+// Tts.setDucking(true);
+// Tts.setDefaultRate(0.25);
 
-const textSpeak = async(text) => {
-  let state = await Tts.getInitStatus();
+// const textSpeak = async(text) => {
+//   let state = await Tts.getInitStatus();
 
-  if(state == 'success') {
-    Tts.speak(text);
-  }
-}
+//   if(state == 'success') {
+//     Tts.speak(text);
+//   }
+// }
 
-const HandBook = ({ navigation, sDim, wDim }) => {  
-  textSpeak('Hello, World');
+const Links = ({ navigation, sDim, wDim }) => {  
+  // textSpeak('Hello, World');
 
   return (
     <SafeAreaView>
@@ -24,7 +24,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
         paddingLeft  : (sDim.width * 0.01), 
         paddingRight : (sDim.width * 0.01) }}>
         <FlatList
-          data       = { [{ chap : 'Chapter I' }, { chap : 'Chapter II' }, { chap : 'Chapter III' }, { chap : 'Chapter IV' }, { chap : 'Chapter V' }, { chap : 'Chapter VI' }]}
+          data       = { [{ chap : 'Vision' }, { chap : 'Mission' }, { chap : 'Hymn' }]}
           renderItem = { ({ item }) => { return (<HandBookChapterCon 
                                                   navigation = { navigation }
                                                   title      = { item.chap }
@@ -36,4 +36,4 @@ const HandBook = ({ navigation, sDim, wDim }) => {
   );
 }
 
-export default HandBook;
+export default Links;
