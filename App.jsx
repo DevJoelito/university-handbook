@@ -110,12 +110,13 @@ const AboutUsView = ({ navigation }) => {
   );
 }
 
-const ChaptersViewView = ({ navigation }) => {
+const ChaptersViewView = ({ navigation, route }) => {
   return (
     <ChaptersView
-      sDim       = { screen }
-      wDim       = { window }
-      navigation = { navigation }
+      sDim        = { screen }
+      wDim        = { window }
+      chapterName = { route.params.title }
+      navigation  = { navigation }
     />
   );
 }
@@ -131,7 +132,6 @@ const ComponentView = ({ route }) => {
         options   = {{ 
           drawerLabel : 'Home',
           headerShown : false,
-          backBehavior : 'firstRoute'
         }} />
       <Drawer.Screen 
         name      = "HandBookView"
@@ -231,25 +231,18 @@ const ComponentView = ({ route }) => {
           drawerLabel : 'About Us'
         }} />
       <Drawer.Screen 
-        name      = "ChaptersView"
-        component = { ChaptersViewView }
-        options   = {{ 
+        name          = "ChaptersView"
+        component     = { ChaptersViewView }
+        initialParams = {{ title : route.params == undefined ? '' : route.params.title }}
+        options       = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
-                                title = { route.params.title } />,  
+                                title = { route.params == undefined ? '' : route.params.title } />,  
           headerStyle : {
             backgroundColor : '#710000',
           },
           drawerItemStyle   : { display : 'none' }
         }} />
-    </Drawer.Navigator>
-  )
-}
-
-const SubComponentView = () => {
-  return (
-    <Drawer.Navigator>
-
     </Drawer.Navigator>
   )
 }

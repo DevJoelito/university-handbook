@@ -1,22 +1,8 @@
 import { FlatList, SafeAreaView, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import HandBookChapterCon from './sub/EvsuLinksContainer';
-import Tts from 'react-native-tts';
-
-Tts.setDucking(true);
-Tts.setDefaultRate(0.25);
-
-// const textSpeak = async(text) => {
-//   let state = await Tts.getInitStatus();
-
-//   if(state == 'success') {
-//     Tts.speak(text);
-//   }
-// }
 
 const Links = ({ navigation, sDim, wDim }) => {  
-  // textSpeak('Hello, World');
-
   return (
     <SafeAreaView>
       <View style = {{ 
