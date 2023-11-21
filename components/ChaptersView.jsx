@@ -118,6 +118,8 @@ const Links = ({ navigation, chapterName, sDim, wDim }) => {
                   width        : (wDim.width * 0.7),
                   borderRadius : 0.5,
                   marginBottom : (wDim.height * 0.01), 
+                  color        : 'black',
+                  fontFamily   : 'Times New Roman'
                 }}
                 placeholder  = 'Find'
                 onChangeText = { setSrchWord }/>

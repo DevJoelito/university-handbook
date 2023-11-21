@@ -1,6 +1,6 @@
 import { FlatList, SafeAreaView, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import HandBookChapterCon from './sub/MissVisHymnContainer';
+import MissVisHymnContainer from './sub/MissVisHymnContainer';
 
 const Links = ({ navigation, sDim, wDim }) => {  
 
@@ -12,7 +12,7 @@ const Links = ({ navigation, sDim, wDim }) => {
         paddingRight : (sDim.width * 0.01) }}>
         <FlatList
           data       = { [{ chap : 'Vision' }, { chap : 'Mission' }, { chap : 'Hymn' }]}
-          renderItem = { ({ item }) => { return (<HandBookChapterCon 
+          renderItem = { ({ item }) => { return (<MissVisHymnContainer 
                                                   navigation = { navigation }
                                                   title      = { item.chap }
                                                   sDim       = { sDim }
