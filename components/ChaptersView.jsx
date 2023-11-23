@@ -9,7 +9,6 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 import { WebView } from 'react-native-webview';
 
 const writeChapterLocal = async (fileName, content) => {
-  
   try {
     let path = RNFS.DocumentDirectoryPath + '/' + fileName + '.html';
 
@@ -38,7 +37,6 @@ const readLocalFile = async (fileName) => {
       };
     }
 
-    console.log(trueFileName);
     if (found) resultFile = await RNFS.readFile(resultInfo[count].path, 'utf8');
 
     return resultFile;
