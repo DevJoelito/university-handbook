@@ -21,7 +21,8 @@ const MissVissHymnContainer = ({ navigation, title, sDim, wDim }) => {
         marginRight     : (sDim.width * 0.06),
         marginLeft      : (sDim.width * 0.06),
         backgroundColor : colorVal,
-      }}>
+      }}
+      onPress = { () => navigation.navigate('ComponentView', { screen : 'MvhView', title }) }>
       <View>
         <Text style = {{ color : 'white', fontWeight : 'bold', fontSize : (sDim.height * 0.026) }}>
             { title }

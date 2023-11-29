@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FlatList, SafeAreaView, Text, View, RefreshControl } from 'react-native';
-import HandBookChapterCon from './sub/HandBookChapterCon';
+import DepartmentCon from './sub/DepartmentCon';
 import * as RNFS from 'react-native-fs';
 
-const writeChapterLocal = async (fileName, content) => {
+const writeDeptLocal = async (fileName, content) => {
   try {
     let path = RNFS.DocumentDirectoryPath + '/' + fileName;
 
@@ -40,36 +40,34 @@ const readLocalFile = async (fileName) => {
   }
 }
 
-
-
-const getChapterName = async () => {
+const getDeptName = async () => {
   try {
-    let result = await fetch(`http://192.168.1.10/evsu_handbook/api/get_handbook.php?chapter_list=1`);
+    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?dept_list=1`);
     let data   = await result.text();
 
-    if(!await writeChapterLocal('chapterName.txt', data)) return await result.json();
+    if(!await writeDeptLocal('deptName.txt', data)) return await result.json();
     
-    final = await readLocalFile('chapterName.txt');
+    final = await readLocalFile('deptName.txt');
 
     if(!final) return await result.json();
 
     return JSON.parse(final);
   } catch(e) {
-    final = await readLocalFile('chapterName.txt');
+    final = await readLocalFile('deptName.txt');
 
-    if(!final) return [ { chap : 0 } ];
+    if(!final) return [ { dept : 0 } ];
 
     return JSON.parse(final);
   }
 }
 
-const HandBook = ({ navigation, sDim, wDim }) => {  
+const DeptView = ({ navigation, sDim, wDim }) => {  
   let [chapterNames, setChapterNames] = useState([]);
   let [refresh, setRefresh]           = useState(false);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
-      setChapterNames(await getChapterName());
+      setChapterNames(await getDeptName());
     });
 
     return unsubscribe;
@@ -77,7 +75,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
 
   const refreshList = useCallback(async () => {
     setRefresh(true);
-    setChapterNames(await getChapterName());
+    setChapterNames(await getDeptName());
     setRefresh(false);
   }, [])
   
@@ -90,34 +88,33 @@ const HandBook = ({ navigation, sDim, wDim }) => {
         {
           (!chapterNames.length) ? 
           <View>
-            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Retrieving chapter lists...</Text>
+            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Retrieving department lists...</Text>
           </View> 
           :
-          (chapterNames[0].chap === 0) ? 
+          (chapterNames[0].dept === 0) ? 
           <View>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
           </View> 
           : 
-          ((chapterNames[0].chap == 'no_chapters') && !chapterNames[0].chap_name) ? 
+          ((chapterNames[0].dept == 'no_dept') && !chapterNames[0].dept_name) ? 
           <View>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No chapter found.</Text>
           </View>
           :
           <FlatList
             data       = { chapterNames }
-            renderItem = { ({ item }) => { return (<HandBookChapterCon 
+            renderItem = { ({ item }) => { return (<DepartmentCon 
                                                     navigation = { navigation }
-                                                    title      = { item.chap_name }
-                                                    chapId     = { item.chap }
+                                                    title      = { item.dept_name }
+                                                    deptId     = { item.dept }
                                                     sDim       = { sDim }
                                                     wDim       = { wDim } />)} }
             refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
           />
-          
         }
       </View>
     </SafeAreaView>
   );
 }
 
-export default HandBook;
+export default DeptView;

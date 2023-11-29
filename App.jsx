@@ -4,7 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Main from './components/Main';
 import HandBook from './components/HandBook';
-import ProgOffered from './components/ProgOffered';
+import DeptView from './components/DeptView';
+import ProgOfferedView from './components/ProgOfferedView';
 import OrgChart from './components/OrgChart';
 import Map from './components/Map';
 import Links from './components/Links';
@@ -12,6 +13,7 @@ import MissVissHymn from './components/MissVisHymn';
 import Events from './components/Events';
 import AboutUs from './components/AboutUs';
 import ChaptersView from './components/ChaptersView';
+import MvhView from './components/MvhView';
 import AppHeaderLogo from './components/sub/AppHeaderLogo';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -40,12 +42,23 @@ const HandBookView = ({ navigation }) => {
   );
 }
 
-const ProgOfferedView = ({ navigation }) => {
+const DepartmentView = ({ navigation }) => {
   return (
-    <ProgOffered 
+    <DeptView 
       sDim       = { screen }
       wDim       = { window }
       navigation = { navigation }
+    />
+  );
+}
+
+const ProgramOfferedView = ({ navigation, route }) => {
+  return (
+    <ProgOfferedView 
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
+      deptId     = { route.params.deptId }
     />
   );
 }
@@ -116,7 +129,19 @@ const ChaptersViewView = ({ navigation, route }) => {
       sDim        = { screen }
       wDim        = { window }
       chapterName = { route.params.title }
+      chapterId   = { route.params.chapId }
       navigation  = { navigation }
+    />
+  );
+}
+
+const MvhComp = ({ navigation, route }) => {
+  return (
+    <MvhView
+      sDim       = { screen }
+      wDim       = { window }
+      titleName  = { route.params.title }
+      navigation = { navigation }
     />
   );
 }
@@ -146,8 +171,8 @@ const ComponentView = ({ route }) => {
           drawerLabel : 'Handbook'
         }} />
       <Drawer.Screen 
-        name      = "ProgOfferedView"
-        component = { ProgOfferedView }
+        name      = "DeptView"
+        component = { DepartmentView }
         backBehavior = 'firstRoute'
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
@@ -233,7 +258,7 @@ const ComponentView = ({ route }) => {
       <Drawer.Screen 
         name          = "ChaptersView"
         component     = { ChaptersViewView }
-        initialParams = {{ title : route.params == undefined ? '' : route.params.title }}
+        initialParams = {{ title : route.params == undefined ? '' : route.params.title, chapId : route.params == undefined ? '' : route.params.chapId }}
         options       = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
@@ -243,6 +268,32 @@ const ComponentView = ({ route }) => {
           },
           drawerItemStyle   : { display : 'none' }
         }} />
+        <Drawer.Screen 
+          name          = "ProgOfferedView"
+          component     = { ProgramOfferedView }
+          initialParams = {{ deptId : route.params == undefined ? '' : route.params.deptId }}
+          options       = {{ 
+            headerTitle : () => <AppHeaderLogo 
+                                  sDim  = { screen }
+                                  title = 'Program Offered' />,  
+            headerStyle : {
+              backgroundColor : '#710000',
+            },
+            drawerItemStyle   : { display : 'none' }
+          }} />
+          <Drawer.Screen 
+            name          = "MvhView"
+            component     = { MvhComp }
+            initialParams = {{ title : route.params == undefined ? '' : route.params.title }}
+            options       = {{ 
+              headerTitle : () => <AppHeaderLogo 
+                                    sDim  = { screen }
+                                    title = { route.params == undefined ? '' : route.params.title } />,  
+              headerStyle : {
+                backgroundColor : '#710000',
+              },
+              drawerItemStyle   : { display : 'none' }
+          }} />
     </Drawer.Navigator>
   )
 }

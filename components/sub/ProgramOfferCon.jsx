@@ -10,9 +10,9 @@ const ProgramOfferedCon = ({ programTitle, sDim, wDim }) => {
             height          : (wDim.width * 0.45),
             display         : 'flex',
             justifyContent  : 'center',
-            padding         : (wDim.width * 0.02)
+            padding         : (wDim.width * 0.025)
         }}>
-            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.030), textAlign : 'center', fontWeight : 'bold' }}>{ programTitle }</Text>
+            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.025), textAlign : 'center' }}>{ programTitle }</Text>
         </View>
     </TouchableOpacity>
   );

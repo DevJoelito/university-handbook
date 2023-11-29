@@ -11,7 +11,7 @@ const Links = ({ navigation, sDim, wDim }) => {
         paddingLeft  : (sDim.width * 0.01), 
         paddingRight : (sDim.width * 0.01) }}>
         <FlatList
-          data       = { [{ chap : 'Vision' }, { chap : 'Mission' }, { chap : 'Hymn' }]}
+          data       = { [{ chap : 'Vision' }, { chap : 'Mission' }, { chap : 'EVSU Hymn' }]}
           renderItem = { ({ item }) => { return (<MissVisHymnContainer 
                                                   navigation = { navigation }
                                                   title      = { item.chap }

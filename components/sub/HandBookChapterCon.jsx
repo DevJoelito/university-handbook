@@ -2,7 +2,7 @@ import { Text, View, TouchableOpacity } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons/faBookmark';
 
-const HandBookChapterCon = ({ navigation, title, sDim, wDim }) => {
+const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId }) => {
   return (
     <TouchableOpacity 
       style = {{
@@ -12,7 +12,7 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim }) => {
         alignItems      : 'center',
         flexDirection   : 'row'
       }}
-      onPress = { () => navigation.navigate('ComponentView', { screen : 'ChaptersView', title }) }>
+      onPress = { () => navigation.navigate('ComponentView', { screen : 'ChaptersView', title, chapId }) }>
       <View style = {{ marginLeft : (wDim.width * 0.05), marginRight : (wDim.width * 0.05) }}>
         <FontAwesomeIcon icon={ faBookmark } size = { sDim.height * 0.05 } color = '#710000' />
       </View>

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ScrollView, TouchableOpacity, SafeAreaView, Text, View, TextInput } from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { ScrollView, TouchableOpacity, SafeAreaView, Text, View, TextInput, RefreshControl } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp';
-import { faRefresh } from '@fortawesome/free-solid-svg-icons/faRefresh';
+import { faVolumeMute } from '@fortawesome/free-solid-svg-icons/faVolumeMute';
 import * as RNFS from 'react-native-fs';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
@@ -45,26 +45,29 @@ const readLocalFile = async (fileName) => {
   }
 }
  
-const Links = ({ navigation, chapterName, sDim, wDim }) => {
+const Links = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
   let [chapterHtml, setChapterHtml] = useState('<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><h3 style="text-align : center">Fetching chapter...</h3>');
   let [srchWord, setSrchWord]       = useState('');
+  let [speak, setSpeak]             = useState(false);
+  let [refresh, setRefresh]         = useState(false);
   let webViewRef                    = useRef('');
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
-      setChapterHtml(await getChapter(chapterName));
+      setChapterHtml(await getChapter(chapterId));
+      setSpeak(false);
     });
 
     return unsubscribe;
   }, [navigation, chapterName]);
 
-  const getChapter = async (chapter) => {
+  const getChapter = useCallback(async (chapter) => {
     setChapterHtml('<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><h3 style="text-align : center">Fetching chapter...</h3>');
     let final = false;
     
     try {
-      let result = await fetch(`http://192.168.1.9/evsu_handbook/api/get_handbook.php?chapter=${ chapter }`);
-      let data   = '<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style>' + await result.text() + '<script type="text/javascript"> document.addEventListener("message", function(message) { let i = JSON.parse(message.data); if(i.srch == "back") { window.find(i.word, false, true) } else if(i.srch == "forward") {  window.find(i.word, false, false) } }); </script>';
+      let result = await fetch(`http://192.168.1.10/evsu_handbook/api/get_handbook.php?chapter=${ chapter }`);
+      let data   = '<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><body>' + await result.text() + '<script type="text/javascript"> document.addEventListener("message", function(message) { let i = JSON.parse(message.data); if(i.srch == "back") { window.find(i.word, false, true) } else if(i.srch == "forward") {  window.find(i.word, false, false) } else if(!i.srch && i.word == "speak") { var text = document.body.innerText; let speech = new SpeechSynthesisUtterance(); speech.text = text; window.speechSynthesis.speak(speech); } }); </script></body>';
       
       if(!await writeChapterLocal(chapter, data)) return data;
       
@@ -80,77 +83,101 @@ const Links = ({ navigation, chapterName, sDim, wDim }) => {
   
       return final;
     }
-  }
+  }, []); 
+
+  const refreshList = useCallback(async () => {
+    setRefresh(true);
+    setChapterHtml(await getChapter(chapterId));
+    setSpeak(false);
+    setRefresh(false);
+  }, [])
 
   return (
     <SafeAreaView style = {{ flex : 1, backgroundColor: '#F7EFEF' }}>
-        <View style = {{ 
-          backgroundColor : 'white',
-          height          : (sDim.height * 0.05),
-          paddingRight    : (sDim.width * 0.03),
-          alignItems      : 'flex-end',
-          justifyContent  : 'center'
-         }}>
+      <View style = {{ 
+        backgroundColor : 'white',
+        height          : (sDim.height * 0.05),
+      }}>
+        <ScrollView 
+          style = {{ 
+            width        : '100%',
+            paddingRight : (sDim.width * 0.03),
+          }}
+          contentContainerStyle = {{
+             alignItems      : 'flex-end',
+             justifyContent  : 'center'
+           }} 
+           refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> } >
           <TouchableOpacity
             onPress = { () => {
+              setSpeak(!speak);
+              webViewRef.current.postMessage(JSON.stringify({ srch : 0, word : !speak ? 'speak' : 'no-speak' }))
             } }>
-            <FontAwesomeIcon icon = { faVolumeUp } size = { sDim.height * 0.04 } color='#710000' />
+            {
+              speak ? 
+              <FontAwesomeIcon icon = { faVolumeUp } size = { sDim.height * 0.04 } color='#710000' />
+              :
+              <FontAwesomeIcon icon = { faVolumeMute } size = { sDim.height * 0.04 } color='#710000' />
+            }
           </TouchableOpacity>
-        </View>
-        {/* <ScrollView style = {{ borderWidth : 2, borderColor : 'red' }}> */}
+        </ScrollView>
+      </View>
+      <View 
+        style = {{ 
+          marginTop    : (sDim.height * 0.01), 
+          marginBottom : (sDim.height * 0.01),
+          flex         : 1
+        }}>
+        <View style = {{
+          display        : 'flex',
+          flexDirection  : 'row',
+          alignItems     : 'center',
+          justifyContent : 'center'
+        }}>
+          <Text style = {{ color : 'black' }}>Find: </Text>
+          <TextInput 
+            style = {{
+              borderWidth  : 0.7,
+              height       : 35,
+              borderWidth  : 0.5,
+              borderRadius : 0.5,
+              width        : (wDim.width * 0.7),
+              borderRadius : 0.5,
+              fontSize     : 15,
+              marginBottom : (wDim.height * 0.01), 
+              color        : 'black',
+              fontFamily   : 'Times New Roman'
+            }}
+            onChangeText = { setSrchWord }/>
           <View style = {{ 
-            marginTop    : (sDim.height * 0.01), 
-            marginBottom : (sDim.height * 0.01),
-            flex         : 1,
-          }}>
-            <View style = {{
-              display        : 'flex',
-              flexDirection  : 'row',
-              alignItems     : 'center',
-              justifyContent : 'center'
+            display        : 'flex',
+            flexDirection  : 'row',
+            justifyContent : 'center',
+            alignItems     : 'center'
             }}>
-              <TextInput 
-                style = {{
-                  borderWidth  : 0.7,
-                  height       : 40,
-                  width        : (wDim.width * 0.7),
-                  borderRadius : 0.5,
-                  marginBottom : (wDim.height * 0.01), 
-                  color        : 'black',
-                  fontFamily   : 'Times New Roman'
-                }}
-                placeholder  = 'Find'
-                onChangeText = { setSrchWord }/>
-              <View style = {{ 
-                display        : 'flex',
-                flexDirection  : 'row',
-                justifyContent : 'center',
-                alignItems     : 'center'
-               }}>
-                <TouchableOpacity 
-                  style   = {{ marginLeft : ( wDim.width * 0.028 ) }}
-                  onPress = { () => webViewRef.current.postMessage(JSON.stringify({ srch : 'back', word : srchWord })) }>
-                  <View>
-                    <FontAwesomeIcon icon = { faArrowLeft } size = { sDim.height * 0.04 } color='#710000' />
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style   = {{ marginLeft : ( wDim.width * 0.028 ) }}
-                  onPress = { () => webViewRef.current.postMessage(JSON.stringify({ srch : 'forward', word : srchWord })) }>
-                  <View>
-                    <FontAwesomeIcon icon = { faArrowRight } size = { sDim.height * 0.04 } color='#710000' />
-                  </View>
-                </TouchableOpacity>
+            <TouchableOpacity 
+              style   = {{ marginLeft : ( wDim.width * 0.028 ) }}
+              onPress = { () => webViewRef.current.postMessage(JSON.stringify({ srch : 'back', word : srchWord })) }>
+              <View>
+                <FontAwesomeIcon icon = { faArrowLeft } size = { sDim.height * 0.03 } color='#710000' />
               </View>
-            </View>
-            <WebView
-              source           = {{ html:  chapterHtml }} 
-              originWhitelist  = {['*']} 
-              mixedContentMode = 'compatibility'
-              style            = {{ marginLeft : (wDim.width * 0.015), marginRight : (wDim.width * 0.015) }} 
-              ref              = { webViewRef }/>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style   = {{ marginLeft : ( wDim.width * 0.028 ) }}
+              onPress = { () => webViewRef.current.postMessage(JSON.stringify({ srch : 'forward', word : srchWord })) }>
+              <View>
+                <FontAwesomeIcon icon = { faArrowRight } size = { sDim.height * 0.03 } color='#710000' />
+              </View>
+            </TouchableOpacity>
           </View>
-        {/* </ScrollView> */}
+        </View>
+        <WebView
+          source           = {{ html:  chapterHtml }} 
+          originWhitelist  = {['*']} 
+          mixedContentMode = 'compatibility'
+          style            = {{ marginLeft : (wDim.width * 0.015), marginRight : (wDim.width * 0.015) }} 
+          ref              = { webViewRef } />
+      </View>
     </SafeAreaView>
   );
 }
