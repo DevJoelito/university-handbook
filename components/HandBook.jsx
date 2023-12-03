@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { FlatList, SafeAreaView, Text, View, RefreshControl } from 'react-native';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl } from 'react-native';
 import HandBookChapterCon from './sub/HandBookChapterCon';
 import * as RNFS from 'react-native-fs';
 
@@ -44,7 +44,7 @@ const readLocalFile = async (fileName) => {
 
 const getChapterName = async () => {
   try {
-    let result = await fetch(`http://192.168.1.10/evsu_handbook/api/get_handbook.php?chapter_list=1`);
+    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?chapter_list=1`);
     let data   = await result.text();
 
     if(!await writeChapterLocal('chapterName.txt', data)) return await result.json();
@@ -68,29 +68,43 @@ const HandBook = ({ navigation, sDim, wDim }) => {
   let [refresh, setRefresh]           = useState(false);
 
   useEffect(() => {
-    let unsubscribe = navigation.addListener('focus', async () => {
+    let focusListener = navigation.addListener('focus', async () => {
       setChapterNames(await getChapterName());
     });
 
-    return unsubscribe;
+    return focusListener;
+  }, [navigation]);
+
+  useEffect(() => {
+    let blurListener = navigation.addListener('blur', async () => {
+      setChapterNames([]);
+    });
+
+    return blurListener;
   }, [navigation]);
 
   const refreshList = useCallback(async () => {
     setRefresh(true);
+    setChapterNames([]);
     setChapterNames(await getChapterName());
     setRefresh(false);
   }, [])
   
   return (
-    <SafeAreaView>
+    <SafeAreaView style = {{ flex : 1 }}>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 
         paddingLeft  : (sDim.width * 0.01), 
-        paddingRight : (sDim.width * 0.01) }}>
+        paddingRight : (sDim.width * 0.01),
+        flex         : 1 }}>
         {
           (!chapterNames.length) ? 
-          <View>
-            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Retrieving chapter lists...</Text>
+          <View style = {{
+            flex           : 1,
+            justifyContent : 'center', 
+            alignItems     : 'center'
+          }}>
+            <ActivityIndicator size="large" color="#900303" />
           </View> 
           :
           (chapterNames[0].chap === 0) ? 
@@ -98,7 +112,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
           </View> 
           : 
-          ((chapterNames[0].chap == 'no_chapters') && !chapterNames[0].chap_name) ? 
+          ((chapterNames[0].chap == 'no_chapters')) ? 
           <View>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No chapter found.</Text>
           </View>

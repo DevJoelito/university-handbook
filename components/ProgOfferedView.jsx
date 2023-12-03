@@ -42,7 +42,7 @@ const readLocalFile = async (fileName) => {
 
 const getProgName = async (dept) => {
   try {
-    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?dept=${dept}`);
+    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?dept=${dept}`);
     let data   = await result.text();
 
     if(!await writeProgLocal(`${dept}_progName.txt`, data)) return await result.json();
@@ -73,9 +73,9 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
     return unsubscribe;
   }, [navigation, deptId]);
 
-  const refreshList = useCallback(async () => {
+  const refreshList = useCallback(async (idDept) => {
     setRefresh(true);
-    setChapterNames(await getProgName(deptId));
+    setChapterNames(await getProgName(idDept));
     setRefresh(false);
   }, [])
   
@@ -96,7 +96,7 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
           </View> 
           : 
-          ((chapterNames[0].prog == 'no_prog') && !chapterNames[0].prog_name) ? 
+          ((chapterNames[0].prog == 'no_prog') || (!chapterNames[0].length)) ? 
           <View>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No programs found.</Text>
           </View>
@@ -139,7 +139,7 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
                                                       </View>
 
             )} }
-            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
+            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(deptId) } /> }
           />
         }
       </View>

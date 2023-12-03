@@ -30,8 +30,6 @@ const MvhView = ({ navigation, sDim, wDim, titleName }) => {
     SoundPlayer.pause();
   }
 
-  
-
   return (
     <SafeAreaView style = {{ flex : 1 }}>
       <Text style = {{ 

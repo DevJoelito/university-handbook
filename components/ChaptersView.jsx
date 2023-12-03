@@ -1,12 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ScrollView, TouchableOpacity, SafeAreaView, Text, View, TextInput, RefreshControl } from 'react-native';
+import { ActivityIndicator, ScrollView, TouchableOpacity, SafeAreaView, Text, View, TextInput, RefreshControl } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp';
 import { faVolumeMute } from '@fortawesome/free-solid-svg-icons/faVolumeMute';
+import Tts from 'react-native-tts';
 import * as RNFS from 'react-native-fs';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 import { WebView } from 'react-native-webview';
+
+const speakTheChapter = async (voiceOn, text) => {
+  await Tts.getInitStatus();
+
+  if(voiceOn) {
+    Tts.speak(text);
+  } else {
+    Tts.stop();
+  }
+}
 
 const writeChapterLocal = async (fileName, content) => {
   try {
@@ -46,48 +57,74 @@ const readLocalFile = async (fileName) => {
 }
  
 const Links = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
-  let [chapterHtml, setChapterHtml] = useState('<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><h3 style="text-align : center">Fetching chapter...</h3>');
-  let [srchWord, setSrchWord]       = useState('');
-  let [speak, setSpeak]             = useState(false);
-  let [refresh, setRefresh]         = useState(false);
-  let webViewRef                    = useRef('');
+  let [chapterHtml, setChapterHtml]   = useState('');
+  let [chapterVoice, setChapterVoice] = useState('No text');
+  let [srchWord, setSrchWord]         = useState('');
+  let [speak, setSpeak]               = useState(false);
+  let [refresh, setRefresh]           = useState(false);
+  let webViewRef                      = useRef('');
 
   useEffect(() => {
-    let unsubscribe = navigation.addListener('focus', async () => {
-      setChapterHtml(await getChapter(chapterId));
+    let focusListener = navigation.addListener('focus', async () => {
+      let d = await getChapter(chapterId);
+
+      setChapterHtml(d.html);
+      setChapterVoice(d.text);
       setSpeak(false);
     });
 
-    return unsubscribe;
+    return focusListener;
   }, [navigation, chapterName]);
 
+  useEffect(() => {
+    let blurListener = navigation.addListener('blur', async () => {
+      setChapterVoice('No text');
+      setChapterHtml('');
+      setSpeak(false);
+      Tts.stop();
+    });
+
+    return blurListener;
+  }, [navigation]);
+
   const getChapter = useCallback(async (chapter) => {
-    setChapterHtml('<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><h3 style="text-align : center">Fetching chapter...</h3>');
-    let final = false;
+    let finalHtml = false;
+    let finalText = false;
     
     try {
-      let result = await fetch(`http://192.168.1.10/evsu_handbook/api/get_handbook.php?chapter=${ chapter }`);
-      let data   = '<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><body>' + await result.text() + '<script type="text/javascript"> document.addEventListener("message", function(message) { let i = JSON.parse(message.data); if(i.srch == "back") { window.find(i.word, false, true) } else if(i.srch == "forward") {  window.find(i.word, false, false) } else if(!i.srch && i.word == "speak") { var text = document.body.innerText; let speech = new SpeechSynthesisUtterance(); speech.text = text; window.speechSynthesis.speak(speech); } }); </script></body>';
+      let result   = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?chapter=${ chapter }`);
+      let response = await result.json();
+      let data     = '<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><body>' + response.html + '<script type="text/javascript"> document.addEventListener("message", function(message) { let i = JSON.parse(message.data); if(i.srch == "back") { window.find(i.word, false, true) } else if(i.srch == "forward") {  window.find(i.word, false, false) } else if(!i.srch && i.word == "speak") { var text = document.body.innerText; let speech = new SpeechSynthesisUtterance(); speech.text = text; window.speechSynthesis.speak(speech); } }); </script></body>';
       
-      if(!await writeChapterLocal(chapter, data)) return data;
+      if(!await writeChapterLocal(chapter, data) || !await writeChapterLocal(chapter + '_for_voice', response.text)) return { html : data, text : response.text };
       
-      final = await readLocalFile(chapter);
+      finalHtml = await readLocalFile(chapter);
+      finalText = await readLocalFile(chapter + '_for_voice');
       
-      if(!final) return data;
+      if(!finalHtml || !finalText) return { html : data, text : response.text };
   
-      return final;
+      return { html : finalHtml, text : finalText };
     } catch (e) {
-      final = await readLocalFile(chapter);
+      finalHtml = await readLocalFile(chapter);
+      finalText = await readLocalFile(chapter + '_for_voice');
+
+      if(!finalHtml || !finalText) return { html : '<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><h3 style="text-align : center">Something went wrong.</h3>', text : 'No text'};
   
-      if(!final) return '<meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body {background-color : #F7EFEF;}</style><h3 style="text-align : center">Something went wrong.</h3>';
-  
-      return final;
+      return { html : finalHtml, text : finalText };
     }
   }, []); 
 
-  const refreshList = useCallback(async () => {
+  const refreshList = useCallback(async (idChapter) => {
+    setChapterHtml('');
+    setChapterVoice('No text');
+    
+    let d = await getChapter(idChapter);
+
     setRefresh(true);
-    setChapterHtml(await getChapter(chapterId));
+    setSpeak(false);
+    Tts.stop();
+    setChapterHtml(d.html);
+    setChapterVoice(d.text);
     setSpeak(false);
     setRefresh(false);
   }, [])
@@ -98,20 +135,18 @@ const Links = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
         backgroundColor : 'white',
         height          : (sDim.height * 0.05),
       }}>
-        <ScrollView 
+        <View 
           style = {{ 
             width        : '100%',
             paddingRight : (sDim.width * 0.03),
-          }}
-          contentContainerStyle = {{
-             alignItems      : 'flex-end',
-             justifyContent  : 'center'
-           }} 
-           refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> } >
+            paddingTop   : (sDim.width * 0.0099),
+            alignItems      : 'flex-end',
+            justifyContent  : 'center'
+          }} >
           <TouchableOpacity
             onPress = { () => {
               setSpeak(!speak);
-              webViewRef.current.postMessage(JSON.stringify({ srch : 0, word : !speak ? 'speak' : 'no-speak' }))
+              speakTheChapter(!speak, chapterVoice)
             } }>
             {
               speak ? 
@@ -120,7 +155,7 @@ const Links = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
               <FontAwesomeIcon icon = { faVolumeMute } size = { sDim.height * 0.04 } color='#710000' />
             }
           </TouchableOpacity>
-        </ScrollView>
+        </View>
       </View>
       <View 
         style = {{ 
@@ -156,27 +191,44 @@ const Links = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
             alignItems     : 'center'
             }}>
             <TouchableOpacity 
-              style   = {{ marginLeft : ( wDim.width * 0.028 ) }}
-              onPress = { () => webViewRef.current.postMessage(JSON.stringify({ srch : 'back', word : srchWord })) }>
+              style    = {{ marginLeft : ( wDim.width * 0.028 ) }}
+              disabled = { chapterHtml == '' ? true : false } 
+              onPress  = { () => webViewRef.current.postMessage(JSON.stringify({ srch : 'back', word : srchWord })) }>
               <View>
                 <FontAwesomeIcon icon = { faArrowLeft } size = { sDim.height * 0.03 } color='#710000' />
               </View>
             </TouchableOpacity>
             <TouchableOpacity 
-              style   = {{ marginLeft : ( wDim.width * 0.028 ) }}
-              onPress = { () => webViewRef.current.postMessage(JSON.stringify({ srch : 'forward', word : srchWord })) }>
+              style    = {{ marginLeft : ( wDim.width * 0.028 ) }}
+              disabled = { chapterHtml == '' ? true : false } 
+              onPress  = { () => webViewRef.current.postMessage(JSON.stringify({ srch : 'forward', word : srchWord })) }>
               <View>
                 <FontAwesomeIcon icon = { faArrowRight } size = { sDim.height * 0.03 } color='#710000' />
               </View>
             </TouchableOpacity>
           </View>
         </View>
-        <WebView
-          source           = {{ html:  chapterHtml }} 
-          originWhitelist  = {['*']} 
-          mixedContentMode = 'compatibility'
-          style            = {{ marginLeft : (wDim.width * 0.015), marginRight : (wDim.width * 0.015) }} 
-          ref              = { webViewRef } />
+        {
+          chapterHtml == '' ? 
+          <View style = {{
+            flex           : 1,
+            justifyContent : 'center', 
+            alignItems     : 'center'
+          }}>
+            <ActivityIndicator size="large" color="#900303" />
+          </View>
+          :
+          <ScrollView 
+            contentContainerStyle = {{ flex : 1 }}
+            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(chapterId) } /> }>
+            <WebView
+              source           = {{ html:  chapterHtml }} 
+              originWhitelist  = {['*']} 
+              mixedContentMode = 'compatibility'
+              style            = {{ marginLeft : (wDim.width * 0.015), marginRight : (wDim.width * 0.015) }} 
+              ref              = { webViewRef } />
+          </ScrollView>
+        }
       </View>
     </SafeAreaView>
   );
