@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { FlatList, SafeAreaView, Text, View, RefreshControl } from 'react-native';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, ScrollView } from 'react-native';
 import DepartmentCon from './sub/DepartmentCon';
 import * as RNFS from 'react-native-fs';
 
@@ -73,33 +73,47 @@ const DeptView = ({ navigation, sDim, wDim }) => {
     return unsubscribe;
   }, [navigation]);
 
+  useEffect(() => {
+    let blurListener = navigation.addListener('blur', async () => {
+      setChapterNames([]);
+    });
+
+    return blurListener;
+  }, [navigation]);
+
   const refreshList = useCallback(async () => {
+    setChapterNames([]);
     setRefresh(true);
     setChapterNames(await getDeptName());
     setRefresh(false);
   }, [])
   
   return (
-    <SafeAreaView>
+    <SafeAreaView style = {{ flex : 1 }}>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 
         paddingLeft  : (sDim.width * 0.01), 
-        paddingRight : (sDim.width * 0.01) }}>
+        paddingRight : (sDim.width * 0.01),
+        flex         : 1 }}>
         {
           (!chapterNames.length) ? 
-          <View>
-            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Retrieving department lists...</Text>
+          <View style = {{
+            flex           : 1,
+            justifyContent : 'center', 
+            alignItems     : 'center'
+          }}>
+            <ActivityIndicator size="large" color="#900303" />
           </View> 
           :
           (chapterNames[0].dept === 0) ? 
-          <View>
+          <ScrollView style = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
-          </View> 
+          </ScrollView> 
           : 
           ((chapterNames[0].dept == 'no_dept') && !chapterNames[0].dept_name) ? 
-          <View>
+          <ScrollView style = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No chapter found.</Text>
-          </View>
+          </ScrollView>
           :
           <FlatList
             data       = { chapterNames }

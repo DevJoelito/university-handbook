@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { FlatList, SafeAreaView, Text, View, RefreshControl } from 'react-native';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, ScrollView } from 'react-native';
 import ProgramOfferCon from './sub/ProgramOfferCon';
 import * as RNFS from 'react-native-fs';
 
@@ -73,33 +73,47 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
     return unsubscribe;
   }, [navigation, deptId]);
 
+  useEffect(() => {
+    let blurListener = navigation.addListener('blur', async () => {
+      setChapterNames([]);
+    });
+
+    return blurListener;
+  }, [navigation]);
+
   const refreshList = useCallback(async (idDept) => {
+    setChapterNames([]);
     setRefresh(true);
     setChapterNames(await getProgName(idDept));
     setRefresh(false);
   }, [])
   
   return (
-    <SafeAreaView>
+    <SafeAreaView style = {{ flex : 1 }}>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 
         paddingLeft  : (sDim.width * 0.01), 
-        paddingRight : (sDim.width * 0.01) }}>
+        paddingRight : (sDim.width * 0.01),
+        flex         : 1 }}>
         {
           (!chapterNames.length) ? 
-          <View>
-            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Retrieving programs lists...</Text>
+          <View style = {{
+            flex           : 1,
+            justifyContent : 'center', 
+            alignItems     : 'center'
+          }}>
+            <ActivityIndicator size="large" color="#900303" />
           </View> 
           :
           (chapterNames[0].prog === 0) ? 
-          <View>
+          <ScrollView style = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(deptId) } /> }>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
-          </View> 
+          </ScrollView> 
           : 
           ((chapterNames[0].prog == 'no_prog') || (!chapterNames[0].length)) ? 
-          <View>
+          <ScrollView style = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(deptId) } /> }>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No programs found.</Text>
-          </View>
+          </ScrollView>
           :
           <FlatList
             data       = { chapterNames }

@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native';
 import SoundPlayer from 'react-native-sound-player'
-import { useIsFocused } from '@react-navigation/native';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
 import { faPause } from '@fortawesome/free-solid-svg-icons/faPause';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp';
+import Tts from 'react-native-tts';
+import { faVolumeMute } from '@fortawesome/free-solid-svg-icons/faVolumeMute';
 
 const playSong = (play) => {
   try {
@@ -16,20 +18,50 @@ const playSong = (play) => {
       SoundPlayer.pause();
     }
   } catch(e) {
-    console.log(e);
+    return false;
+  }
+
+  return true;
+}
+
+const speakTheEvsu = async (voiceOn, text) => {
+  await Tts.getInitStatus();
+
+  if(voiceOn) {
+    Tts.speak(text);
+  } else {
+    Tts.stop();
   }
 }
 
 const MvhView = ({ navigation, sDim, wDim, titleName }) => {
-  let [play, setPlay] = useState(false);
-  let isFocused = useIsFocused();
+  let [play, setPlay]               = useState(false);
+  let [playMission, setPlayMission] = useState(false);
+  let [playVision, setPlayVision]   = useState(false);
+  let mission                       = "Develop a Strong Technologically and Professionally Competent Productive Human Resource Imbued with Positive Values Needed to Propel Sustainable Development.";
+  let vision                        = "A Leading State University in Technological and Professional Education."; 
 
-  if(isFocused) {
-    playSong(play);
-  } else {
-    SoundPlayer.pause();
+  if(!playSong(play) && play) {
+    setPlay(false);
   }
 
+  const resetPlayFigure = useCallback(() => {
+    setPlayMission(false);
+    setPlayVision(false);
+  });
+
+  useEffect(() => {
+    let blurListener = navigation.addListener('blur', async () => {
+      setPlay(false);
+      setPlayMission(false);
+      setPlayVision(false);
+      SoundPlayer.pause();
+      Tts.stop();
+    });
+
+    return blurListener;
+  }, [navigation]);
+  
   return (
     <SafeAreaView style = {{ flex : 1 }}>
       <Text style = {{ 
@@ -45,11 +77,11 @@ const MvhView = ({ navigation, sDim, wDim, titleName }) => {
           <View style = {{ marginTop : 15, marginBottom : 15, display : 'flex', alignItems : 'center' }}>
             {
               (!play) ?
-              <TouchableOpacity onPress = {() => setPlay(!play)}>
+              <TouchableOpacity onPress = { () => setPlay(!play) }>
                 <FontAwesomeIcon icon = { faPlay } size = { sDim.height * 0.04 } color='#710000' />
               </TouchableOpacity>
               :
-              <TouchableOpacity onPress = {() => setPlay(!play)}>
+              <TouchableOpacity onPress = { () => setPlay(!play)}>
                 <FontAwesomeIcon icon = { faPause } size = { sDim.height * 0.04 } color='#710000' />
               </TouchableOpacity>
             }
@@ -61,31 +93,55 @@ const MvhView = ({ navigation, sDim, wDim, titleName }) => {
         {
           titleName == 'Mission' ?
           <View>
+            <View style = {{ alignItems : 'center', marginTop : (wDim.height * 0.015) }}>
+              {
+                (!playMission) ? 
+                <TouchableOpacity onPress = { () => { setPlayMission(!playMission); speakTheEvsu(!playMission, mission); } }>
+                  <FontAwesomeIcon icon = { faVolumeMute } size = { sDim.height * 0.04 } color='#710000' />
+                </TouchableOpacity>
+                :
+                <TouchableOpacity onPress = { () => { setPlayMission(!playMission); speakTheEvsu(!playMission, mission); } }>
+                  <FontAwesomeIcon icon = { faVolumeUp } size = { sDim.height * 0.04 } color='#710000' />
+                </TouchableOpacity>
+              }
+            </View>
             <Text style = {{
-              textAlign    : 'center',
-              fontSize     : (wDim.height * 0.025),
-              color        : 'black',
-              marginTop    : 20,
-              fontWeight   : 'bold',
-              paddingLeft  : (wDim.width * 0.018),
+              textAlign     : 'center',
+              fontSize      : (wDim.height * 0.025),
+              color         : 'black',
+              marginTop     : (wDim.height * 0.015),
+              fontWeight    : 'bold',
+              paddingLeft   : (wDim.width * 0.018),
               paddingRight  : (wDim.width * 0.018)
             }}>
-              Develop a Strong Technologically and Professionally Competent Productive Human Resource Imbued with Positive Values Needed to Propel Sustainable Development.
+              { mission }
             </Text>
           </View> 
           :
           titleName == 'Vision' ?
           <View>
+            <View style = {{ alignItems : 'center', marginTop : (wDim.height * 0.015) }}>
+              {
+                (!playVision) ? 
+                <TouchableOpacity onPress = { () => { setPlayVision(!playVision); speakTheEvsu(!playVision, vision); } }>
+                  <FontAwesomeIcon icon = { faVolumeMute } size = { sDim.height * 0.04 } color='#710000' />
+                </TouchableOpacity>
+                :
+                <TouchableOpacity onPress = { () => { setPlayVision(!playVision); speakTheEvsu(!playVision, vision) } }>
+                  <FontAwesomeIcon icon = { faVolumeUp } size = { sDim.height * 0.04 } color='#710000' />
+                </TouchableOpacity>
+              }
+            </View>
             <Text style = {{
               textAlign    : 'center',
               fontSize     : (wDim.height * 0.025),
               color        : 'black',
-              marginTop    : 20,
+              marginTop    : (wDim.height * 0.015),
               fontWeight   : 'bold',
               paddingLeft  : (wDim.width * 0.018),
-              paddingRight  : (wDim.width * 0.018)
+              paddingRight : (wDim.width * 0.018)
             }}>
-              A Leading State University in Technological and Professional Education.
+              { vision }
             </Text>
           </View>
           :

@@ -14,9 +14,10 @@ import {
 const Main = ({ navigation, sDim, wDim }) => {
   return (
     <SafeAreaView style = {{ flex : 1 }}>
-      <EvsuHeader 
-        sDim = { sDim }
-        wDim = { wDim } />
+      <EvsuHeader
+        navigation = { navigation } 
+        sDim       = { sDim }
+        wDim       = { wDim } />
       <ScrollView>
         <View style = {{ 
           display    : 'flex',

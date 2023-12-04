@@ -220,7 +220,7 @@ const Links = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
           :
           <ScrollView 
             contentContainerStyle = {{ flex : 1 }}
-            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(chapterId) } /> }>
+            refreshControl        = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(chapterId) } /> }>
             <WebView
               source           = {{ html:  chapterHtml }} 
               originWhitelist  = {['*']} 

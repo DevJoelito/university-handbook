@@ -31,8 +31,11 @@ const Map = ({sDim, wDim}) => {
         <TouchableOpacity onPress = {() => setViewMap(!viewMap)}>
           <Image 
             style      = {{ 
-              width  : (sDim.width * 0.8), 
-              height : (sDim.height * 0.75), 
+              borderWidth  : 2,
+              borderColor  : "#900303",
+              borderRadius : 5,
+              width        : (sDim.width * 0.8), 
+              height       : (sDim.height * 0.75), 
             }}
             source     = {require('../assets/images/evsu-map.png')}
             resizeMode = 'stretch'
