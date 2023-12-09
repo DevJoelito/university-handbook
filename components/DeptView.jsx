@@ -44,7 +44,7 @@ const getDeptName = async () => {
   try {
     let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?dept_list=1`);
     let data   = await result.text();
-
+    
     if(!await writeDeptLocal('deptName.txt', data)) return await result.json();
     
     final = await readLocalFile('deptName.txt');
@@ -53,6 +53,7 @@ const getDeptName = async () => {
 
     return JSON.parse(final);
   } catch(e) {
+    console.log(e);
     final = await readLocalFile('deptName.txt');
 
     if(!final) return [ { dept : 0 } ];
