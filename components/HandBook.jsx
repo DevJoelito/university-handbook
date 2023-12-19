@@ -69,9 +69,6 @@ const HandBook = ({ navigation, sDim, wDim }) => {
   let [chapterNames, setChapterNames] = useState([]);
   let [refresh, setRefresh]           = useState(false);
   let [searchText, setSearchText]     = useState('');
-  let [searchObject, setSearchObject] = useState([]);
-
-  console.log(chapterNames);
 
   useEffect(() => {
     let focusListener = navigation.addListener('focus', async () => {
@@ -96,21 +93,32 @@ const HandBook = ({ navigation, sDim, wDim }) => {
     setRefresh(false);
   }, []);
 
-  const search = useCallback(new Promise((resolve, reject) => {
-    let wordSearch = new RegExp(searchText, 'i');
-    let chapLen    = chapterNames.length;
-    let objRes     = [];
-
-    for(i = 0; i < chapLen; i++) {
-      let res = chapterNames[i].chap_name.search(wordSearch, 'i');
-
-      if(res >= 0) {
-        objRes.push(chapterNames[i]);
+  const search = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      let wordSearch = new RegExp(searchText, 'i');
+      let chapLen    = chapterNames.length;
+      let objRes     = [];
+  
+      for(i = 0; i < chapLen; i++) {
+        let res = chapterNames[i].chap_name.search(wordSearch, 'i');
+  
+        if(res >= 0) {
+          objRes.push(chapterNames[i]);
+        }
       }
-    }
+      
+      if(!objRes.length) return resolve([{chap : 'no_chapters', chap_name : ''}]);
 
-    resolve(objRes);
-  }));
+      resolve(objRes);
+    })
+  });
+
+  const useSearch = useCallback(async () => {
+    setRefresh(true);
+    setChapterNames([]);
+    setChapterNames(await search());
+    setRefresh(false);
+  })
   
   return (
     <SafeAreaView style = {{ flex : 1,  }}>
@@ -134,7 +142,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
           }}
           onChangeText = { setSearchText }
         />
-        <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }}>
+        <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} onPress = { useSearch }>
           <FontAwesomeIcon icon={ faSearch } size = { sDim.height * 0.030 } color = '#710000' />
         </TouchableOpacity>
       </View>
@@ -161,6 +169,11 @@ const HandBook = ({ navigation, sDim, wDim }) => {
           ((chapterNames[0].chap == 'no_chapters')) ? 
           <View>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No chapter found.</Text>
+            <View>
+              <TouchableOpacity>
+                <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           :
           <FlatList
