@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, SafeAreaView, Modal, Image, TouchableOpacity } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import { WebView } from 'react-native-webview';
 
 const image = [
   {
@@ -16,31 +17,15 @@ const Map = ({sDim, wDim}) => {
 
   return (
     <SafeAreaView style = {{flex : 1, backgroundColor: '#F7EFEF' }}>
-      <Modal 
-        visible        = {viewMap} 
-        transparent    = {true}
-        onRequestClose = {() => setViewMap(!viewMap)}  
-      >
-        <ImageViewer imageUrls = {image} />
-      </Modal>
       <View style = {{
-          flex           : 1,
-          alignItems     : 'center',
-          justifyContent : 'center'
+          flex        : 1,
+          borderWidth : 2,
         }}>
-        <TouchableOpacity onPress = {() => setViewMap(!viewMap)}>
-          <Image 
-            style      = {{ 
-              borderWidth  : 2,
-              borderColor  : "#900303",
-              borderRadius : 5,
-              width        : (sDim.width * 0.8), 
-              height       : (sDim.height * 0.75), 
-            }}
-            source     = {require('../assets/images/evsu-map.png')}
-            resizeMode = 'stretch'
-          />
-        </TouchableOpacity>
+        <WebView
+              source           = {{ uri: 'https://www.google.com/maps/d/u/0/embed?mid=1m0uZz4Z8_aof_zdP5vgoJVVzsTlPxwA&ehbc=2E312F&noprof=1&fbclid=IwAR235YI4t9pNNbDH6MvGDr0V4qZsAxNJtWm9ksLLwut3ntJ5UqQVsOO2pVc&ll=11.01095377420635%2C124.60534020766627&z=18' }}
+              originWhitelist  = {['*']} 
+              mixedContentMode = 'compatibility'
+              style            = {{ flex : 1 }} />
       </View>
     </SafeAreaView>
   );

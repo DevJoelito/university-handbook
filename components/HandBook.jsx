@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl } from 'react-native';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, TextInput, TouchableOpacity } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import HandBookChapterCon from './sub/HandBookChapterCon';
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import * as RNFS from 'react-native-fs';
 
 const writeChapterLocal = async (fileName, content) => {
@@ -66,6 +68,10 @@ const getChapterName = async () => {
 const HandBook = ({ navigation, sDim, wDim }) => {  
   let [chapterNames, setChapterNames] = useState([]);
   let [refresh, setRefresh]           = useState(false);
+  let [searchText, setSearchText]     = useState('');
+  let [searchObject, setSearchObject] = useState([]);
+
+  console.log(chapterNames);
 
   useEffect(() => {
     let focusListener = navigation.addListener('focus', async () => {
@@ -88,10 +94,50 @@ const HandBook = ({ navigation, sDim, wDim }) => {
     setChapterNames([]);
     setChapterNames(await getChapterName());
     setRefresh(false);
-  }, [])
+  }, []);
+
+  const search = useCallback(new Promise((resolve, reject) => {
+    let wordSearch = new RegExp(searchText, 'i');
+    let chapLen    = chapterNames.length;
+    let objRes     = [];
+
+    for(i = 0; i < chapLen; i++) {
+      let res = chapterNames[i].chap_name.search(wordSearch, 'i');
+
+      if(res >= 0) {
+        objRes.push(chapterNames[i]);
+      }
+    }
+
+    resolve(objRes);
+  }));
   
   return (
-    <SafeAreaView style = {{ flex : 1 }}>
+    <SafeAreaView style = {{ flex : 1,  }}>
+      <View style = {{
+        padding           : (wDim.height * 0.006),
+        paddingLeft       : (wDim.height * 0.02),
+        paddingRight      : (wDim.height * 0.02),        
+        borderBottomWidth : 0.7,
+        borderColor       : '#949494',
+        display           : 'flex',
+        flexDirection     : 'row',
+      }}>
+        <TextInput
+          style        = {{ 
+            borderWidth     : 0.5,
+            borderRadius    : 2, 
+            flexGrow        : 1,
+            height          : (wDim.height * 0.048),
+            backgroundColor : '#faf5f5',
+            color           : 'black',
+          }}
+          onChangeText = { setSearchText }
+        />
+        <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }}>
+          <FontAwesomeIcon icon={ faSearch } size = { sDim.height * 0.030 } color = '#710000' />
+        </TouchableOpacity>
+      </View>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 
         paddingLeft  : (sDim.width * 0.01), 
