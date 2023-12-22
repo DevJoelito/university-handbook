@@ -42,8 +42,6 @@ const readLocalFile = async (fileName) => {
   }
 }
 
-
-
 const getChapterName = async () => {
   try {
     let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?chapter_list=1`);
@@ -111,14 +109,14 @@ const HandBook = ({ navigation, sDim, wDim }) => {
 
       resolve(objRes);
     })
-  });
+  }, [chapterNames]);
 
   const useSearch = useCallback(async () => {
     setRefresh(true);
     setChapterNames([]);
     setChapterNames(await search());
     setRefresh(false);
-  })
+  }, [])
   
   return (
     <SafeAreaView style = {{ flex : 1,  }}>

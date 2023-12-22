@@ -11,11 +11,9 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId }) => {
   return (
     <TouchableOpacity 
       style = {{
-        height          : (sDim.height * 0.07),
         backgroundColor : '#f3f3f3',
         marginBottom    : (sDim.height * 0.01),
         flexDirection   : 'row',
-        position        : 'relative',
         shadowColor     : '#000',
         shadowOffset    : { width: 1, height: 1 },
         shadowOpacity   : 10,
@@ -23,35 +21,42 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId }) => {
         elevation       : 2,
       }}
       onPress = { () => navigation.navigate('ComponentView', { screen : 'ChaptersView', title, chapId }) }>
-      <View>
-        <View style = {{
-          display       : 'flex',
-          flexDirection : 'row',
-          alignItems    : 'center'
-        }}>
-          <View style = {{ marginLeft : (wDim.width * 0.05), marginRight : (wDim.width * 0.05) }}>
-            <FontAwesomeIcon icon={ faBookmark } size = { sDim.height * 0.040 } color = '#710000' />
-          </View>
-          <View style = {{
-            display        : 'flex',
-            justifyContent : 'center'
-          }}>
-            <View>
-              <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.027) }}>
-                  { title }
-              </Text>
+      <View style = {{ display : 'flex', justifyContent : 'center', width : '100%' }}>
+        <View style = {{ position : 'relative', height : (sDim.height * 0.06), width : '100%' }}>
+          <View>
+            <View style = {{
+              display       : 'flex',
+              flexDirection : 'row',
+              alignItems    : 'center'
+            }}>
+              <View style = {{ marginLeft : (wDim.width * 0.05), marginRight : (wDim.width * 0.05) }}>
+                <FontAwesomeIcon icon={ faBookmark } size = { sDim.height * 0.040 } color = '#710000' />
+              </View>
+              <View style = {{
+                display        : 'flex',
+                justifyContent : 'center'
+              }}>
+                <View>
+                  <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.027) }}>
+                      { title }
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
+          <TouchableOpacity onPress = { () => setDown(!down) } style = {{ marginRight : (wDim.width * 0.028), position : 'absolute', right : (wDim.width * 0.008), top : (wDim.height * 0.008), padding : (wDim.height * 0.005) }}>
+            {
+              down ? 
+              <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.020 } color = '#5d6d7e' />
+              :
+              <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#5d6d7e' />
+            }
+          </TouchableOpacity>
+        </View>
+        <View style = {{ paddingTop : (wDim.height * 0.007), paddingBottom : (wDim.height * 0.01), paddingRight : (wDim.width * 0.015), paddingLeft : (wDim.width * 0.05), display : (down ? 'block' : 'none') }}>
+          <Text style = {{ color : 'black' }}>This is a sample short description.</Text>
         </View>
       </View>
-      <TouchableOpacity style = {{ marginRight : (wDim.width * 0.028), position : 'absolute', right : (wDim.width * 0.008), top : (wDim.height * 0.008), padding : (wDim.height * 0.005) }}>
-        {
-          down ? 
-          <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.020 } color = '#5d6d7e' />
-          :
-          <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#5d6d7e' />
-        }
-      </TouchableOpacity>
     </TouchableOpacity>
   );
 }

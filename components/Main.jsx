@@ -45,9 +45,9 @@ const Main = ({ navigation, sDim, wDim }) => {
               navigation = { navigation } 
               sDim       = { sDim } 
               wDim       = { wDim } 
-              icon       = { faUserFriends } 
-              title      = 'Organizational Chart'
-              navTitle   = 'OrgChartView' />
+              icon       = { faGlobe }
+              title      = 'EVSU OC Links'
+              navTitle   = 'LinkView' />
             <MainOptionsContainer 
               navigation = { navigation }
               sDim       = { sDim } 
@@ -58,13 +58,13 @@ const Main = ({ navigation, sDim, wDim }) => {
           </View>
 
           <View style = { styles.subConProps }>
-            <MainOptionsContainer
-              navigation = { navigation } 
+            <MainOptionsContainer 
+              navigation = { navigation }
               sDim       = { sDim } 
               wDim       = { wDim } 
-              icon       = { faGlobe }
-              title      = 'EVSU OC Links'
-              navTitle   = 'LinkView' />
+              icon       = { faBook } 
+              title      = 'Events'
+              navTitle   = 'EventsView' />
             <MainOptionsContainer 
               navigation = { navigation } 
               sDim       = { sDim } 
@@ -75,13 +75,6 @@ const Main = ({ navigation, sDim, wDim }) => {
           </View>
 
           <View style = { styles.subConProps }>
-            <MainOptionsContainer 
-              navigation = { navigation }
-              sDim       = { sDim } 
-              wDim       = { wDim } 
-              icon       = { faBook } 
-              title      = 'Events'
-              navTitle   = 'EventsView' />
             <MainOptionsContainer
               navigation = { navigation } 
               sDim       = { sDim } 

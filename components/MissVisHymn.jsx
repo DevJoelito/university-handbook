@@ -1,5 +1,4 @@
 import { FlatList, SafeAreaView, Text, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import MissVisHymnContainer from './sub/MissVisHymnContainer';
 
 const Links = ({ navigation, sDim, wDim }) => {  

@@ -146,6 +146,17 @@ const MvhComp = ({ navigation, route }) => {
   );
 }
 
+const ArticleViewView = ({ navigation, route }) => {
+  return (
+    <ArticleView
+      sDim       = { screen }
+      wDim       = { window }
+      titleName  = { route }
+      navigation = { navigation }
+    />
+  );
+}
+
 
 const ComponentView = ({ route }) => {
   return (
