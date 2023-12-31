@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, ScrollView } from 'react-native';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, TouchableOpacity } from 'react-native';
 import DepartmentCon from './sub/DepartmentCon';
 import * as RNFS from 'react-native-fs';
 
-const writeDeptLocal = async (fileName, content) => {
+const writeLocal = async (fileName, content) => {
   try {
     let path = RNFS.DocumentDirectoryPath + '/' + fileName;
 
@@ -42,33 +42,36 @@ const readLocalFile = async (fileName) => {
 
 const getDeptName = async () => {
   try {
-    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?dept_list=1`);
+    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?dept_list=1`);
     let data   = await result.text();
-    
-    if(!await writeDeptLocal('deptName.txt', data)) return await result.json();
-    
-    final = await readLocalFile('deptName.txt');
 
-    if(!final) return await result.json();
+    if(data == '__error__') return data;
 
-    return JSON.parse(final);
+    let objRes = JSON.parse(data);
+
+    if(!await writeLocal('deptList.json', data)) return objRes;
+    
+    return objRes
   } catch(e) {
-    console.log(e);
-    final = await readLocalFile('deptName.txt');
+    let final = await readLocalFile('deptList.json');
 
-    if(!final) return [ { dept : 0 } ];
+    if(!final) return '__error__';
 
-    return JSON.parse(final);
+    try {
+      return JSON.parse(final);
+    } catch(e) {
+      return '__errror__';
+    }
   }
 }
 
 const DeptView = ({ navigation, sDim, wDim }) => {  
-  let [chapterNames, setChapterNames] = useState([]);
+  let [deptNames, setDeptNames] = useState([]);
   let [refresh, setRefresh]           = useState(false);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
-      setChapterNames(await getDeptName());
+      setDeptNames(await getDeptName());
     });
 
     return unsubscribe;
@@ -76,16 +79,16 @@ const DeptView = ({ navigation, sDim, wDim }) => {
 
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
-      setChapterNames([]);
+      setDeptNames([]);
     });
 
     return blurListener;
   }, [navigation]);
 
   const refreshList = useCallback(async () => {
-    setChapterNames([]);
+    setDeptNames([]);
     setRefresh(true);
-    setChapterNames(await getDeptName());
+    setDeptNames(await getDeptName());
     setRefresh(false);
   }, [])
   
@@ -96,8 +99,11 @@ const DeptView = ({ navigation, sDim, wDim }) => {
         paddingLeft  : (sDim.width * 0.01), 
         paddingRight : (sDim.width * 0.01),
         flex         : 1 }}>
+          <View style = {{ marginLeft : (wDim.width * 0.04) }}>
+            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.028), marginBottom : (wDim.height * 0.03) }}>Select Campus:</Text>
+          </View>
         {
-          (!chapterNames.length) ? 
+          (refresh) ? 
           <View style = {{
             flex           : 1,
             justifyContent : 'center', 
@@ -106,22 +112,32 @@ const DeptView = ({ navigation, sDim, wDim }) => {
             <ActivityIndicator size="large" color="#900303" />
           </View> 
           :
-          (chapterNames[0].dept === 0) ? 
-          <ScrollView style = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }>
+          (deptNames == '__error__') ? 
+          <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }}>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
-          </ScrollView> 
+            <View>
+              <TouchableOpacity>
+                <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           : 
-          ((chapterNames[0].dept == 'no_dept') && !chapterNames[0].dept_name) ? 
-          <ScrollView style = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }>
-            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No chapter found.</Text>
-          </ScrollView>
+          (!deptNames.length) ? 
+          <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }}>
+            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No department found.</Text>
+            <View>
+              <TouchableOpacity>
+                <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           :
           <FlatList
-            data       = { chapterNames }
+            data       = { deptNames }
             renderItem = { ({ item }) => { return (<DepartmentCon 
                                                     navigation = { navigation }
-                                                    title      = { item.dept_name }
-                                                    deptId     = { item.dept }
+                                                    title      = { item.name }
+                                                    deptId     = { item.id }
                                                     sDim       = { sDim }
                                                     wDim       = { wDim } />)} }
             refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }

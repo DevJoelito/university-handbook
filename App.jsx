@@ -6,7 +6,6 @@ import Main from './components/Main';
 import HandBook from './components/HandBook';
 import DeptView from './components/DeptView';
 import ProgOfferedView from './components/ProgOfferedView';
-import OrgChart from './components/OrgChart';
 import Map from './components/Map';
 import Links from './components/Links';
 import MissVissHymn from './components/MissVisHymn';
@@ -14,6 +13,7 @@ import Events from './components/Events';
 import AboutUs from './components/AboutUs';
 import ChaptersView from './components/ChaptersView';
 import MvhView from './components/MvhView';
+import MapCon from './components/MapCon'
 import AppHeaderLogo from './components/sub/AppHeaderLogo';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -59,16 +59,6 @@ const ProgramOfferedView = ({ navigation, route }) => {
       wDim       = { window }
       navigation = { navigation }
       deptId     = { route.params.deptId }
-    />
-  );
-}
-
-const OrgChartView = ({ navigation }) => {
-  return (
-    <OrgChart 
-      sDim       = { screen }
-      wDim       = { window }
-      navigation = { navigation }
     />
   );
 }
@@ -146,22 +136,40 @@ const MvhComp = ({ navigation, route }) => {
   );
 }
 
-const ArticleViewView = ({ navigation, route }) => {
+const MapViewCon = ({ navigation, route }) => {
   return (
-    <ArticleView
-      sDim       = { screen }
-      wDim       = { window }
-      titleName  = { route }
-      navigation = { navigation }
+    <MapCon
+      sDim     = { screen }
+      wDim     = { window }
+      mapTitle = { route.params.title }
+      mapLink  = { route.params.link }
     />
   );
 }
 
-
 const ComponentView = ({ route }) => {
   return (
     <Drawer.Navigator 
-      backBehavior = 'firstRoute'>
+      backBehavior = 'firstRoute'
+      screenOptions      = {{ 
+        drawerItemStyle : {
+          opacity          : 0.9,
+          fontWeight       : 'bold',
+          borderRadius     : 0,
+          marginHorizontal : (window.height * 0.002),
+          marginVertical   : (window.height * 0.001),
+          color            : 'white'
+        },
+        drawerLabelStyle : {
+          color      : 'white',
+          fontFamily : 'Times New Roman',
+          fontSize   : (window.height * 0.024) 
+        },
+        drawerStyle : {
+          margin          : 0,
+          backgroundColor : '#710000'
+        }
+       }}>
       <Drawer.Screen 
         name      = "MainView"
         component = { MainView } 
@@ -193,18 +201,6 @@ const ComponentView = ({ route }) => {
             backgroundColor : '#710000',
           },
           drawerLabel : 'Program Offered'
-        }} />
-      <Drawer.Screen 
-        name      = "OrgChartView"
-        component = { OrgChartView } 
-        options   = {{ 
-          headerTitle : () => <AppHeaderLogo 
-                                sDim  = { screen }
-                                title = 'Organizational Chart' />,  
-          headerStyle : {
-            backgroundColor : '#710000',
-          },
-          drawerLabel : 'Organizational Chart'
         }} />
       <Drawer.Screen 
         name      = "MapView"
@@ -296,6 +292,19 @@ const ComponentView = ({ route }) => {
             name          = "MvhView"
             component     = { MvhComp }
             initialParams = {{ title : route.params == undefined ? '' : route.params.title }}
+            options       = {{ 
+              headerTitle : () => <AppHeaderLogo 
+                                    sDim  = { screen }
+                                    title = { route.params == undefined ? '' : route.params.title } />,  
+              headerStyle : {
+                backgroundColor : '#710000',
+              },
+              drawerItemStyle   : { display : 'none' }
+          }} />
+          <Drawer.Screen 
+            name          = "MapWebView"
+            component     = { MapViewCon }
+            initialParams = {{ title : route.params == undefined ? '' : route.params.title, link : route.params == undefined ? '' : route.params.link }}
             options       = {{ 
               headerTitle : () => <AppHeaderLogo 
                                     sDim  = { screen }

@@ -5,7 +5,7 @@ import HandBookChapterCon from './sub/HandBookChapterCon';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import * as RNFS from 'react-native-fs';
 
-const writeChapterLocal = async (fileName, content) => {
+const writeLocal = async (fileName, content) => {
   try {
     let path = RNFS.DocumentDirectoryPath + '/' + fileName;
 
@@ -44,33 +44,38 @@ const readLocalFile = async (fileName) => {
 
 const getChapterName = async () => {
   try {
-    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?chapter_list=1`);
+    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?chapter_list=1`);
     let data   = await result.text();
 
-    if(!await writeChapterLocal('chapterName.txt', data)) return await result.json();
+    if(data == '__error__') return data;
     
-    final = await readLocalFile('chapterName.txt');
+    let objRes = JSON.parse(data);
 
-    if(!final) return await result.json();
-
-    return JSON.parse(final);
+    if(!await writeLocal('chapterName.json', data)) return objRes;
+    
+    return objRes;
   } catch(e) {
-    final = await readLocalFile('chapterName.txt');
+    let final = await readLocalFile('chapterName.json');
 
-    if(!final) return [ { chap : 0 } ];
+    if(!final) return '__error__';
 
-    return JSON.parse(final);
+    try {
+      return JSON.parse(final);
+    } catch(e) {
+      return '__errror__';
+    }
   }
 }
 
 const HandBook = ({ navigation, sDim, wDim }) => {  
   let [chapterNames, setChapterNames] = useState([]);
-  let [refresh, setRefresh]           = useState(false);
+  let [refresh, setRefresh]           = useState(true);
   let [searchText, setSearchText]     = useState('');
 
   useEffect(() => {
     let focusListener = navigation.addListener('focus', async () => {
-      setChapterNames(await getChapterName());
+      setChapterNames(await getChapterName()); 
+      setRefresh(false);
     });
 
     return focusListener;
@@ -79,6 +84,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
       setChapterNames([]);
+      setRefresh(true);
     });
 
     return blurListener;
@@ -92,34 +98,36 @@ const HandBook = ({ navigation, sDim, wDim }) => {
   }, []);
 
   const search = useCallback(() => {
+    console.log(searchText);
     return new Promise((resolve, reject) => {
       let wordSearch = new RegExp(searchText, 'i');
       let chapLen    = chapterNames.length;
       let objRes     = [];
   
       for(i = 0; i < chapLen; i++) {
-        let res = chapterNames[i].chap_name.search(wordSearch, 'i');
+        let res = chapterNames[i].chapter_name.search(wordSearch, 'i');
   
         if(res >= 0) {
           objRes.push(chapterNames[i]);
         }
       }
+
       
-      if(!objRes.length) return resolve([{chap : 'no_chapters', chap_name : ''}]);
+      if(!objRes.length) return resolve([]);
 
       resolve(objRes);
     })
-  }, [chapterNames]);
+  }, [chapterNames, searchText]);
 
   const useSearch = useCallback(async () => {
     setRefresh(true);
     setChapterNames([]);
     setChapterNames(await search());
     setRefresh(false);
-  }, [])
+  }, [chapterNames, searchText])
   
   return (
-    <SafeAreaView style = {{ flex : 1,  }}>
+    <SafeAreaView style = {{ flex : 1 }}>
       <View style = {{
         padding           : (wDim.height * 0.006),
         paddingLeft       : (wDim.height * 0.02),
@@ -150,7 +158,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
         paddingRight : (sDim.width * 0.01),
         flex         : 1 }}>
         {
-          (!chapterNames.length) ? 
+          (refresh) ? 
           <View style = {{
             flex           : 1,
             justifyContent : 'center', 
@@ -159,13 +167,18 @@ const HandBook = ({ navigation, sDim, wDim }) => {
             <ActivityIndicator size="large" color="#900303" />
           </View> 
           :
-          (chapterNames[0].chap === 0) ? 
-          <View>
+          (chapterNames == '__error__') ? 
+          <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }}>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
+            <View>
+              <TouchableOpacity>
+                <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
+              </TouchableOpacity>
+            </View>
           </View> 
           : 
-          ((chapterNames[0].chap == 'no_chapters')) ? 
-          <View>
+          (!chapterNames.length) ? 
+          <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }}>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No chapter found.</Text>
             <View>
               <TouchableOpacity>
@@ -178,8 +191,8 @@ const HandBook = ({ navigation, sDim, wDim }) => {
             data       = { chapterNames }
             renderItem = { ({ item }) => { return (<HandBookChapterCon 
                                                     navigation = { navigation }
-                                                    title      = { item.chap_name }
-                                                    chapId     = { item.chap }
+                                                    title      = { item.chapter_name }
+                                                    chapId     = { item.id }
                                                     sDim       = { sDim }
                                                     wDim       = { wDim } />)} }
             refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }

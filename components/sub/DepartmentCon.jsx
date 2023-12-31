@@ -16,13 +16,13 @@ const DepartmentCon = ({ navigation, title, sDim, wDim, deptId }) => {
       <View style = {{ marginLeft : (wDim.width * 0.02), marginRight : (wDim.width * 0.04) }}>
         <Image 
             style = {{
-                height : (wDim.height * 0.08),
-                width  : (wDim.height * 0.08),
+                height : (wDim.height * 0.05),
+                width  : (wDim.height * 0.05),
             }}
             source = { require('../../assets/images/the-evsu-logo.png') } />
       </View>
       <View>
-        <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.024) }}>
+        <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.022) }}>
             { title }
         </Text>
       </View>

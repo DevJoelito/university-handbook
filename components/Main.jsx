@@ -4,7 +4,6 @@ import MainOptionsContainer from './sub/MainOptionsContainer';
 import { 
   faBookOpen, 
   faChalkboardTeacher, 
-  faUserFriends, 
   faMap,      
   faGlobe,             
   faGraduationCap, 
