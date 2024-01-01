@@ -14,6 +14,7 @@ import AboutUs from './components/AboutUs';
 import ChaptersView from './components/ChaptersView';
 import MvhView from './components/MvhView';
 import MapCon from './components/MapCon'
+import ReportView from './components/ReportView';
 import AppHeaderLogo from './components/sub/AppHeaderLogo';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -136,13 +137,23 @@ const MvhComp = ({ navigation, route }) => {
   );
 }
 
-const MapViewCon = ({ navigation, route }) => {
+const MapViewCon = ({ route }) => {
   return (
     <MapCon
       sDim     = { screen }
       wDim     = { window }
       mapTitle = { route.params.title }
       mapLink  = { route.params.link }
+    />
+  );
+}
+
+const ReportViewView = ({ navigation }) => {
+  return (
+    <ReportView
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
     />
   );
 }
@@ -249,6 +260,18 @@ const ComponentView = ({ route }) => {
             backgroundColor : '#710000',
           },
           drawerLabel : 'Events'
+        }} /> 
+        <Drawer.Screen 
+          name      = "ReportView"
+          component = { ReportViewView }
+          options   = {{ 
+            headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'Report' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          },
+          drawerLabel : 'Report'
         }} />
       <Drawer.Screen 
         name      = "AboutUsView"
@@ -256,11 +279,11 @@ const ComponentView = ({ route }) => {
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
-                                title = 'About Us' />,  
+                                title = 'Contact Us' />,  
           headerStyle : {
             backgroundColor : '#710000',
           },
-          drawerLabel : 'About Us'
+          drawerLabel : 'Contact Us'
         }} />
       <Drawer.Screen 
         name          = "ChaptersView"

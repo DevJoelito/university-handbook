@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { TouchableOpacity, ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, ScrollView } from 'react-native';
+import { TouchableOpacity, ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl } from 'react-native';
 import * as RNFS from 'react-native-fs';
 import FastImage from 'react-native-fast-image';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
+import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 
 const writeLocal = async (fileName, content) => {
   try {
@@ -66,8 +69,10 @@ const getEvents = async () => {
 }
 
 const Events = ({ navigation, sDim, wDim }) => {  
-  let [event, setEvents]    = useState([]);
+  let [events, setEvents]   = useState([]);
   let [refresh, setRefresh] = useState(true);
+  let [down, setDown]       = useState(false);
+  let [show, setShow]       = useState(false);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
@@ -88,9 +93,9 @@ const Events = ({ navigation, sDim, wDim }) => {
   }, [navigation]);
 
   const refreshList = useCallback(async () => {
-    setChapterNames([]);
+    setEvents([]);
     setRefresh(true);
-    setChapterNames(await getDeptName());
+    setEvents(await getEvents());
     setRefresh(false);
   }, [])
   
@@ -102,7 +107,7 @@ const Events = ({ navigation, sDim, wDim }) => {
         paddingRight : (sDim.width * 0.03),
         flex         : 1 }}>
         {
-          (!chapterNames.length) ? 
+          (refresh) ? 
           <View style = {{
             flex           : 1,
             justifyContent : 'center', 
@@ -111,39 +116,64 @@ const Events = ({ navigation, sDim, wDim }) => {
             <ActivityIndicator size="large" color="#900303" />
           </View> 
           :
-          (chapterNames[0].name === 0) ? 
-          <ScrollView contentContainerStyle = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }>
+          (events == '__error__') ? 
+          <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }} >
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
-          </ScrollView> 
+            <View>
+              <TouchableOpacity>
+                <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
+              </TouchableOpacity>
+            </View>
+          </View> 
           : 
-          ((chapterNames[0].name == 'no_events')) ? 
-          <ScrollView contentContainerStyle = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }>
+          (!events.length) ? 
+          <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }} >
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No events found.</Text>
-          </ScrollView>
+            <View>
+              <TouchableOpacity>
+                <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           :
           <FlatList
-            data       = { chapterNames }
+            data       = { events }
             renderItem = { ({ item }) => { return (
-                                                    <TouchableOpacity style = {{ marginBottom : (wDim.height * 0.02) }}>
-                                                      <View style = {{ width : '100%', backgroundColor : '#d9d9d9', borderRadius : 5 }}>
+                                                    <View style = {{ marginBottom : (wDim.height * 0.02) }}>
+                                                      <View style = {{ width : '100%', backgroundColor : 'white', borderRadius : 5 }}>
                                                         <View style = {{ height : (wDim.height * 0.20) }}>
                                                           <FastImage
                                                             style={{ width: '100%', height : '100%' }}
-                                                            source={{ uri: item.image }}
+                                                            source={{ uri: item.event_img }}
                                                           />
                                                         </View>
-                                                        <View style = {{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', padding : (wDim.width * 0.015) }}>
-                                                          <Text style = {{ 
-                                                            color      : 'black', 
-                                                            fontSize   : (wDim.height * 0.025), 
-                                                            fontWeight : 'bold' }}>{ item.name }</Text>
-                                                          <Text style = {{ 
-                                                            color      : 'black', 
-                                                            fontSize   : (wDim.height * 0.02),
-                                                            marginTop  : 'auto' }}>{ item.date_start }</Text> 
+                                                        <View>
+                                                          <View style = {{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', alignItems : 'center', padding : (wDim.width * 0.015) }}>
+                                                            <Text style = {{ 
+                                                              color      : 'black', 
+                                                              fontSize   : (wDim.height * 0.025), 
+                                                              fontWeight : 'bold' }}>{ item.name }</Text>
+                                                            <View style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', flexDirection : 'row' }}>
+                                                              <Text style = {{ 
+                                                                color      : 'black', 
+                                                                fontSize   : (wDim.height * 0.02),
+                                                                marginTop  : 'auto' }}>{ item.date_start }</Text> 
+                                                              <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} onPress = { () => {setDown(!down); setShow(!show)} }> 
+                                                                {
+                                                                  (down) ?
+                                                                  <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.022 } color = 'black' />
+                                                                  :
+                                                                  <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.022 } color = 'black' />
+                                                                }
+                                                              </TouchableOpacity>
+                                                            </View>
+                                                          </View>
+                                                          <View style = {{ display : ((show) ? "block" : "none"), padding : (wDim.width * 0.03) }}>
+                                                            <Text style = {{ color : 'black' }}>{ item.description }</Text>
+                                                          </View>
                                                         </View>
                                                       </View>
-                                                    </TouchableOpacity>)} }
+                                                    </View>)} }
             refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
           />
         }
