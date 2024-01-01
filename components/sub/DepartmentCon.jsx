@@ -1,16 +1,21 @@
 import { Text, View, TouchableOpacity, Image } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBookmark } from '@fortawesome/free-solid-svg-icons/faBookmark';
 
 const DepartmentCon = ({ navigation, title, sDim, wDim, deptId }) => {
   return (
     <TouchableOpacity 
       style = {{
-        height          : (sDim.height * 0.1),
-        backgroundColor : '#F7EFEF',
-        marginBottom    : (sDim.height * 0.01),
-        alignItems      : 'center',
-        flexDirection   : 'row'
+        borderBottomWidth : 1,
+        borderTopWidth    : 1,
+        marginLeft        : (wDim.width * 0.02),
+        marginRight       : (wDim.width * 0.02),
+        paddingLeft       : (wDim.width * 0.018),
+        paddingRight      : (wDim.width * 0.018),
+        paddingTop        : (wDim.height * 0.014),
+        paddingBottom     : (wDim.height * 0.014),
+        display           : 'flex',
+        flexDirection     : 'row',
+        alignItems        : 'center',
+        marginBottom      : (wDim.height * 0.02)
       }}
       onPress = { () => navigation.navigate('ComponentView', { screen : 'ProgOfferedView', deptId }) }>
       <View style = {{ marginLeft : (wDim.width * 0.02), marginRight : (wDim.width * 0.04) }}>
@@ -22,7 +27,7 @@ const DepartmentCon = ({ navigation, title, sDim, wDim, deptId }) => {
             source = { require('../../assets/images/the-evsu-logo.png') } />
       </View>
       <View>
-        <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.022) }}>
+        <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.022), flex : 1, flexWrap : 'wrap'}}>
             { title }
         </Text>
       </View>

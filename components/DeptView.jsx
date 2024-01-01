@@ -42,7 +42,7 @@ const readLocalFile = async (fileName) => {
 
 const getDeptName = async () => {
   try {
-    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?dept_list=1`);
+    let result = await fetch(`http://192.168.5.185/evsu_handbook/api/get_handbook.php?dept_list=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
@@ -67,11 +67,12 @@ const getDeptName = async () => {
 
 const DeptView = ({ navigation, sDim, wDim }) => {  
   let [deptNames, setDeptNames] = useState([]);
-  let [refresh, setRefresh]           = useState(false);
+  let [refresh, setRefresh]     = useState(true);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
       setDeptNames(await getDeptName());
+      setRefresh(false);
     });
 
     return unsubscribe;
@@ -80,6 +81,7 @@ const DeptView = ({ navigation, sDim, wDim }) => {
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
       setDeptNames([]);
+      setRefresh(false);
     });
 
     return blurListener;
@@ -94,14 +96,14 @@ const DeptView = ({ navigation, sDim, wDim }) => {
   
   return (
     <SafeAreaView style = {{ flex : 1 }}>
+      <View style = {{ paddingLeft : (wDim.width * 0.04), paddingTop : (wDim.height * 0.02) }}>
+        <Text style = {{ color : 'black', fontSize : (wDim.height * 0.030) }}>Select Department:</Text>
+      </View>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 
         paddingLeft  : (sDim.width * 0.01), 
         paddingRight : (sDim.width * 0.01),
         flex         : 1 }}>
-          <View style = {{ marginLeft : (wDim.width * 0.04) }}>
-            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.028), marginBottom : (wDim.height * 0.03) }}>Select Campus:</Text>
-          </View>
         {
           (refresh) ? 
           <View style = {{

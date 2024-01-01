@@ -3,7 +3,7 @@ import { TouchableOpacity, ActivityIndicator, FlatList, SafeAreaView, Text, View
 import * as RNFS from 'react-native-fs';
 import FastImage from 'react-native-fast-image';
 
-const writeDeptLocal = async (fileName, content) => {
+const writeLocal = async (fileName, content) => {
   try {
     let path = RNFS.DocumentDirectoryPath + '/' + fileName;
 
@@ -40,35 +40,39 @@ const readLocalFile = async (fileName) => {
   }
 }
 
-const getDeptName = async () => {
+const getEvents = async () => {
   try {
-    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?events=1`);
+    let result = await fetch(`http://192.168.5.185/evsu_handbook/api/get_handbook.php?events=1`);
     let data   = await result.text();
 
-    if(!await writeDeptLocal('events.txt', data)) return await result.json();
+    if(data == '__error__') return data;
 
-    
-    final = await readLocalFile('events.txt');
-    
-    if(!final) return await result.json();
-    
-    return JSON.parse(final);
+    let objRes = JSON.parse(data);
+
+    if(!await writeLocal('events.json', data)) return objRes;
+
+    return objRes;
   } catch(e) {
-    final = await readLocalFile('events.txt');
+    let final = await readLocalFile('events.json');
 
-    if(!final) return [ { dept : 0 } ];
+    if(!final) return '__error__';
 
-    return JSON.parse(final);
+    try {
+      return JSON.parse(final);
+    } catch(e) {
+      return '__error__';
+    }
   }
 }
 
 const Events = ({ navigation, sDim, wDim }) => {  
-  let [chapterNames, setChapterNames] = useState([]);
-  let [refresh, setRefresh]           = useState(false);
+  let [event, setEvents]    = useState([]);
+  let [refresh, setRefresh] = useState(true);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
-      setChapterNames(await getDeptName());
+      setEvents(await getEvents());
+      setRefresh(false);
     });
 
     return unsubscribe;
@@ -76,7 +80,8 @@ const Events = ({ navigation, sDim, wDim }) => {
 
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
-      setChapterNames([]);
+      setEvents([]);
+      setRefresh(false);
     });
 
     return blurListener;

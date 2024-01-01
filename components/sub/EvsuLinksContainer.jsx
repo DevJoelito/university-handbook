@@ -1,21 +1,6 @@
 import { Text, View, TouchableOpacity, Linking } from 'react-native';
-import { WebView } from 'react-native-webview';
 
 const EvsuLinksContainer = ({ navigation, link, title, sDim, wDim }) => {
-  let colorVal = '#7e1416';
-  let url      = 'https://apps.evsu.edu.ph';
-
-  if(title == 'EVSU STUDENT PORTAL') {
-    colorVal = '#0b6376';
-    url      = 'https://apps.evsu.edu.ph/students/login';
-  } else if(title == 'EVSU ONLINE ADMISSION') {
-    colorVal = '#a568aa';
-    url      = 'https://apps.evsu.edu.ph/admissions';
-  } else if(title == 'EVSU OC FACEBOOK PAGE') {
-    colorVal = '#0b7622';
-    url      = 'https://www.facebook.com/myEVSU.ormoc';
-  }
-
   return (
     <TouchableOpacity 
       style = {{
@@ -27,20 +12,12 @@ const EvsuLinksContainer = ({ navigation, link, title, sDim, wDim }) => {
         flexDirection   : 'row',
         marginRight     : (sDim.width * 0.06),
         marginLeft      : (sDim.width * 0.06),
-        backgroundColor : colorVal,
         position        : 'relative'
       }}
-      onPress = { () => Linking.openURL(url) }>
-        <View style = {{ flex : 1, height : '100%', width : '100%', position : 'absolute', zIndex : 1 }}>
-          <WebView
-            source           = {{ uri: url }}
-            originWhitelist  = {['*']} 
-            mixedContentMode = 'compatibility'
-            style            = {{ flex : 1 }} />
-        </View>
-      <View style = {{ zIndex : 2, backgroundColor : colorVal }}>
+      onPress = { () => Linking.openURL(link) }>
+      <View style = {{ position : 'absolute', width : '100%', bottom : 0 }}>
         <View style = {{ padding : (wDim.width * 0.01), borderRadius : 10 }}>
-          <Text style = {{ color : 'black', fontWeight : 'bold', fontSize : (sDim.height * 0.026) }}>
+          <Text style = {{ color : 'black', fontWeight : 'bold', fontSize : (sDim.height * 0.020), flex : 1, flexWrap : 'wrap' }}>
               { title }
           </Text>
         </View>

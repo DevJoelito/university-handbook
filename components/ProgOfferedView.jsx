@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, ScrollView } from 'react-native';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, ScrollView, TouchableOpacity } from 'react-native';
 import ProgramOfferCon from './sub/ProgramOfferCon';
 import * as RNFS from 'react-native-fs';
 
-const writeProgLocal = async (fileName, content) => {
+const writeLocal = async (fileName, content) => {
   try {
     let path = RNFS.DocumentDirectoryPath + '/' + fileName;
 
@@ -42,32 +42,37 @@ const readLocalFile = async (fileName) => {
 
 const getProgName = async (dept) => {
   try {
-    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?dept=${dept}`);
+    let result = await fetch(`http://192.168.5.185/evsu_handbook/api/get_handbook.php?dept=${dept}`);
     let data   = await result.text();
 
-    if(!await writeProgLocal(`${dept}_progName.txt`, data)) return await result.json();
-    
-    final = await readLocalFile(`${dept}_progName.txt`);
+    if(data == '__error__') return data;
 
-    if(!final) return await result.json();
+    let objRes = JSON.parse(data);
 
-    return JSON.parse(final);
+    if(!await writeLocal(`${dept}_progName.txt`, data)) return objRes;
+
+    return objRes;
   } catch(e) {
-    final = await readLocalFile(`${dept}_progName.txt`);
+    let final = await readLocalFile(`${dept}_progName.txt`);
 
-    if(!final) return [ { dept : 0 } ];
+    if(!final) return '__error__';
 
-    return JSON.parse(final);
+    try {
+      return JSON.parse(final);
+    } catch(e) {
+      return '__error__';
+    }
   }
 }
 
 const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {  
-  let [chapterNames, setChapterNames] = useState([]);
-  let [refresh, setRefresh]           = useState(false);
+  let [programs, setPrograms] = useState([]);
+  let [refresh, setRefresh]           = useState(true);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
-      setChapterNames(await getProgName(deptId));
+      setPrograms(await getProgName(deptId));
+      setRefresh(false);
     });
 
     return unsubscribe;
@@ -75,18 +80,19 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
 
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
-      setChapterNames([]);
+      setPrograms([]);
+      setRefresh(false);
     });
 
     return blurListener;
   }, [navigation]);
 
-  const refreshList = useCallback(async (idDept) => {
-    setChapterNames([]);
+  const refreshList = useCallback(async () => {
+    setPrograms([]);
     setRefresh(true);
-    setChapterNames(await getProgName(idDept));
+    setPrograms(await getProgName(deptId));
     setRefresh(false);
-  }, [])
+  }, [deptId])
   
   return (
     <SafeAreaView style = {{ flex : 1 }}>
@@ -96,7 +102,7 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
         paddingRight : (sDim.width * 0.01),
         flex         : 1 }}>
         {
-          (!chapterNames.length) ? 
+          (refresh) ? 
           <View style = {{
             flex           : 1,
             justifyContent : 'center', 
@@ -105,55 +111,36 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
             <ActivityIndicator size="large" color="#900303" />
           </View> 
           :
-          (chapterNames[0].prog === 0) ? 
-          <ScrollView style = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(deptId) } /> }>
+          (programs == '__error__') ? 
+          <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }} >
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
-          </ScrollView> 
+            <View>
+              <TouchableOpacity>
+                <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
+              </TouchableOpacity>
+            </View>
+          </View> 
           : 
-          ((chapterNames[0].prog == 'no_prog') || (!chapterNames[0].length)) ? 
-          <ScrollView style = {{ flex : 1 }} refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(deptId) } /> }>
+          (!programs.length) ? 
+          <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }} >
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No programs found.</Text>
-          </ScrollView>
+            <View>
+              <TouchableOpacity>
+                <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           :
           <FlatList
-            data       = { chapterNames }
+            data       = { programs }
             renderItem = { ({ item }) => { return (
-                                                    (item.length == 1) ? 
-                                                      <View style = {{
-                                                        display        : 'flex',
-                                                        flexDirection  : 'row',
-                                                        justifyContent : 'space-around',
-                                                        alignItems     : 'center',
-                                                        marginBottom   : ( wDim.height * 0.015 )
-                                                      }}>
-                                                        <ProgramOfferCon 
-                                                          navigation   = { navigation }
-                                                          programTitle = { item[0].prog_name }
-                                                          sDim         = { sDim }
-                                                          wDim         = { wDim } />
-                                                      </View>
-                                                      :
-                                                      <View style = {{
-                                                        display        : 'flex',
-                                                        flexDirection  : 'row',
-                                                        justifyContent : 'space-around',
-                                                        alignItems     : 'center',
-                                                        marginBottom   : ( wDim.height * 0.015 )
-                                                      }}> 
-                                                        <ProgramOfferCon 
-                                                          navigation   = { navigation }
-                                                          programTitle = { item[0].prog_name }
-                                                          sDim         = { sDim }
-                                                          wDim         = { wDim } />
-                                                        <ProgramOfferCon 
-                                                          navigation   = { navigation }
-                                                          programTitle = { item[1].prog_name }
-                                                          sDim         = { sDim }
-                                                          wDim         = { wDim } />
-                                                      </View>
-
+              <ProgramOfferCon 
+                navigation   = { navigation }
+                programTitle = { item.name }
+                sDim         = { sDim }
+                wDim         = { wDim } />
             )} }
-            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { () => refreshList(deptId) } /> }
+            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
           />
         }
       </View>
