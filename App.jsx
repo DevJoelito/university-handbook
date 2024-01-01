@@ -279,11 +279,11 @@ const ComponentView = ({ route }) => {
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
-                                title = 'Contact Us' />,  
+                                title = 'About Us' />,  
           headerStyle : {
             backgroundColor : '#710000',
           },
-          drawerLabel : 'Contact Us'
+          drawerLabel : 'About Us'
         }} />
       <Drawer.Screen 
         name          = "ChaptersView"

@@ -79,7 +79,7 @@ const Main = ({ navigation, sDim, wDim }) => {
               sDim       = { sDim } 
               wDim       = { wDim } 
               icon       = { faInfo }
-              title      = 'Contact Us'
+              title      = 'About Us'
               navTitle   = 'AboutUsView' />
           </View>
         </View>

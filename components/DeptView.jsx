@@ -81,7 +81,7 @@ const DeptView = ({ navigation, sDim, wDim }) => {
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
       setDeptNames([]);
-      setRefresh(false);
+      setRefresh(true);
     });
 
     return blurListener;

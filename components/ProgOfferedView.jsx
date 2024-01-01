@@ -67,7 +67,7 @@ const getProgName = async (dept) => {
 
 const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {  
   let [programs, setPrograms] = useState([]);
-  let [refresh, setRefresh]           = useState(true);
+  let [refresh, setRefresh]   = useState(true);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
@@ -81,7 +81,7 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
       setPrograms([]);
-      setRefresh(false);
+      setRefresh(true);
     });
 
     return blurListener;
