@@ -44,7 +44,7 @@ const readLocalFile = async (fileName) => {
 
 const getChapterName = async () => {
   try {
-    let result = await fetch(`http://192.168.5.185/evsu_handbook/api/get_handbook.php?chapter_list=1`);
+    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?chapter_list=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
@@ -62,7 +62,7 @@ const getChapterName = async () => {
     try {
       return JSON.parse(final);
     } catch(e) {
-      return '__errror__';
+      return '__error__';
     }
   }
 }
@@ -98,7 +98,6 @@ const HandBook = ({ navigation, sDim, wDim }) => {
   }, []);
 
   const search = useCallback(() => {
-    console.log(searchText);
     return new Promise((resolve, reject) => {
       let wordSearch = new RegExp(searchText, 'i');
       let chapLen    = chapterNames.length;

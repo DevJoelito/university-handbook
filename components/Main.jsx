@@ -12,7 +12,7 @@ import {
 
 const Main = ({ navigation, sDim, wDim }) => {
   return (
-    <SafeAreaView style = {{ flex : 1 }}>
+    <SafeAreaView style = {{ flex : 1, zIndex : 1 }}>
       <EvsuHeader
         navigation = { navigation } 
         sDim       = { sDim }
