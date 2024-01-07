@@ -5,7 +5,7 @@ import { WebView } from 'react-native-webview';
 
 const submitReport = async (data) => {
     try {
-        let response = await fetch('http://192.168.5.185/evsu_handbook/api/get_handbook.php?send_report=1', {
+        let response = await fetch('https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?send_report=1', {
             method  : "POST",
             headers : {
                 Accept         : 'application/json',

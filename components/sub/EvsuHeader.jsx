@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, View, Image, TouchableOpacity } from 'react-na
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons/faBell';
 import * as RNFS from 'react-native-fs';
-import { parse } from 'react-native-svg';
+import PushNotification from "react-native-push-notification";
 
 const writeLocal = async (fileName, content) => {
   try {
@@ -44,7 +44,7 @@ const readLocalFile = async (fileName) => {
 
 const getNotif = async () => {
   try {
-    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?notif=1`);
+    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?notif=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
@@ -67,20 +67,6 @@ const getNotif = async () => {
   }
 }
 
-const notifLength = (notif, comNotif) => {
-  let n = [];
-  
-  if (notif != '__error__' && notif.length && comNotif) {
-    let eventNotifCount   = parseInt(notif[0].event_count) - parseInt(comNotif[0].eventNotifCount);
-    let chapterNotifCount = parseInt(notif[0].chapter_count) - parseInt(comNotif[0].chapterNotifCount);
-    let allNotifCount     = eventNotifCount + chapterNotifCount;
-    n                     = [{ eventNotifCount, chapterNotifCount, allNotifCount }];
-  }
-
-
-  return n;
-}
-
 const overWriteNotif = async (ahead, behind, type) => {
   let moded = behind;
   
@@ -88,6 +74,8 @@ const overWriteNotif = async (ahead, behind, type) => {
     moded[0].event_count = ahead[0].event_count;
   } else if(type == 'chapter') {
     moded[0].chapter_count = ahead[0].chapter_count;
+  } else if(type == 'link') {
+    moded[0].link_count = ahead[0].link_count;
   }
 
   try {
@@ -95,11 +83,33 @@ const overWriteNotif = async (ahead, behind, type) => {
   } catch(e) {}
 }
 
+const triggerNotif =  (notifCount, notifType, navigation) => {
+  let id        = 0;
+  let notifMess = "new chapter/s added.";
+
+  if(notifType == 'event') {
+    notifMess = "new event/s added.";
+    id        = 1;
+  } else if(notifType == 'link') {
+    notifMess = "new link/s added.";
+    id        = 2;
+  }
+  
+  PushNotification.localNotificationSchedule({
+    channelId  : "thesis-handbook-app-notif",
+    id,
+    title      : "EVSU handbook",
+    message    : notifCount + " " + notifMess,
+    date       : new Date(Date.now() + (60 * 1000))
+  });
+}
+
 const EvsuHeader = ({ navigation, sDim, wDim }) => {
-  let [notif, setNotif]             = useState([{"chapter_count":"0", "event_count":"0"}]);
-  let [behindNotif, setBehindNotif] = useState([{"chapter_count":"0", "event_count":"0"}]);
+  let [notif, setNotif]             = useState([{"chapter_count":"0", "event_count":"0", "link_count":"0"}]);
+  let [behindNotif, setBehindNotif] = useState([{"chapter_count":"0", "event_count":"0", "link_count":"0"}]);
   let [showBox, setShowBox]         = useState(false);
   let [refresh, setRefresh]         = useState(true);
+
 
   useEffect(() => {
     let focusListener = navigation.addListener('focus', async () => {
@@ -109,13 +119,23 @@ const EvsuHeader = ({ navigation, sDim, wDim }) => {
         let behNotif = await readLocalFile('comNotif.json'); 
         
         if(!behNotif) {
-          await writeLocal('comNotif.json', '[{"chapter_count":"0","event_count":"0"}]');
+          await writeLocal('comNotif.json', '[{"chapter_count":"0","event_count":"0","link_count":"0"}]');
         } else {
           setBehindNotif(JSON.parse(behNotif));
         }
       } catch(e) {}
 
       setRefresh(false);
+
+      let eventCount   = parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count);
+      let chapterCount = parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count);
+      let linkCount    = parseInt(notif[0].link_count) - parseInt(behindNotif[0].link_count);
+
+      if(eventCount != 0) triggerNotif(eventCount, 'event', navigation);
+      
+      if(chapterCount != 0) triggerNotif(chapterCount, 'chapter', navigation);
+      
+      if(linkCount != 0) triggerNotif(linkCount, 'link', navigation);
     })
 
     return focusListener;
@@ -163,7 +183,7 @@ const EvsuHeader = ({ navigation, sDim, wDim }) => {
             right    : (wDim.width * 0.02) }}>
               <TouchableOpacity onPress = { () => setShowBox(!showBox) } >
                 {
-                  ((parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) != 0 || (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) != 0 && notif != '__error__') && <View style = {{ 
+                  (((parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) != 0 || (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) != 0 || (parseInt(notif[0].link_count) - parseInt(behindNotif[0].link_count)) != 0) && notif != '__error__') && <View style = {{ 
                                                             top             : 0, 
                                                             right           : (wDim.width * 0.040), 
                                                             borderWidth     : 1.5, 
@@ -177,7 +197,7 @@ const EvsuHeader = ({ navigation, sDim, wDim }) => {
                                                               fontSize   : (wDim.width * 0.035),
                                                               padding    : 2
                                                              }}>
-                                                              { (parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) + (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) }
+                                                              { (parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) + (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) + (parseInt(notif[0].link_count) - parseInt(behindNotif[0].link_count)) }
                                                             </Text>
                                                           </View>
                 }
@@ -230,14 +250,14 @@ const EvsuHeader = ({ navigation, sDim, wDim }) => {
                   <View><Text style = {{ color : 'black' }}>Something went wrong.</Text></View>
                   : 
                   (behindNotif.length ) ?
-                  ((parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) == 0 && (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) == 0) ? 
+                  ((parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) == 0 && (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) == 0 && parseInt(notif[0].link_count) - parseInt(behindNotif[0].link_count) == 0) ? 
                   <View><Text style = {{ color : 'black' }}>0 notifications.</Text></View>
                   :
                   <View>
                     <TouchableOpacity style = {{ 
                       paddingTop        : 8, 
                       marginBottom      : (wDim.height * 0.01), 
-                      display           : (notif[0].chapter_count - behindNotif[0].chapter_count != 0) ? 'block' : 'none', 
+                      display           : (parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count) != 0) ? 'block' : 'none', 
                       padding           : (wDim.height * 0.005), 
                       borderBottomWidth : 0.5, 
                       borderColor       : '#abb2b9' }}
@@ -255,7 +275,7 @@ const EvsuHeader = ({ navigation, sDim, wDim }) => {
                     <TouchableOpacity style = {{ 
                       paddingTop        : 8, 
                       marginBottom      : (wDim.height * 0.01), 
-                      display           : (notif[0].event_count - behindNotif[0].event_count != 0) ? 'block' : 'none', 
+                      display           : (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count) != 0) ? 'block' : 'none', 
                       padding           : (wDim.height * 0.005), 
                       borderBottomWidth : 0.5, 
                       borderColor       : '#abb2b9' }}
@@ -268,6 +288,24 @@ const EvsuHeader = ({ navigation, sDim, wDim }) => {
                         fontSize   : (wDim.height * 0.024), 
                         fontWeight : 'bold' }}>
                         { (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) } new event/s added.
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style = {{ 
+                      paddingTop        : 8, 
+                      marginBottom      : (wDim.height * 0.01), 
+                      display           : (parseInt(notif[0].link_count) - parseInt(behindNotif[0].link_count) != 0) ? 'block' : 'none', 
+                      padding           : (wDim.height * 0.005), 
+                      borderBottomWidth : 0.5, 
+                      borderColor       : '#abb2b9' }}
+                      onPress = { () => {
+                        overWriteNotif(notif, behindNotif, 'link');
+                        navigation.navigate('LinkView');
+                      } }>
+                      <Text style = {{ 
+                        color      : 'black', 
+                        fontSize   : (wDim.height * 0.024), 
+                        fontWeight : 'bold' }}>
+                        { (parseInt(notif[0].link_count) - parseInt(behindNotif[0].link_count)) } new link/s added.
                       </Text>
                     </TouchableOpacity>
                   </View>

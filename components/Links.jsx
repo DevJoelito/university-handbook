@@ -43,7 +43,7 @@ const readLocalFile = async (fileName) => {
 
 const getLinks = async () => {
   try {
-    let result = await fetch(`http://192.168.5.185/evsu_handbook/api/get_handbook.php?links=1`);
+    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?links=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
@@ -94,8 +94,6 @@ const Links = ({ navigation, sDim, wDim }) => {
     setLinks(await getLinks());
     setRefresh(false);
   }, []);
-
-  console.log(links)
 
   return (
     <SafeAreaView style = {{ flex : 1 }}>

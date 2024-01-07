@@ -16,7 +16,6 @@ const ChaptersViewCon = ({ wDim, sDim, title, article, webContent }) => {
     const speakTheEvsu = async (voiceOn, text) => {
         try {
             await Tts.getInitStatus();
-            console.log(voiceOn);
           
             if(voiceOn) {
                 Tts.speak(text);
@@ -25,9 +24,7 @@ const ChaptersViewCon = ({ wDim, sDim, title, article, webContent }) => {
             } else {
                 Tts.stop();
             }
-        } catch (e) {
-            console.log(e);
-        }
+        } catch (e) {}
       }
 
     return (

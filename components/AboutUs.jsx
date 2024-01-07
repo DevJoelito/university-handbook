@@ -42,7 +42,7 @@ const readLocalFile = async (fileName) => {
 
 const getAboutUs = async () => {
   try {
-    let result = await fetch(`http://192.168.5.185/evsu_handbook/api/get_handbook.php?about_us=1`);
+    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?about_us=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
