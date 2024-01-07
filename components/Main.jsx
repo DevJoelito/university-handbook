@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, ScrollView, View } from 'react-native';
+import { StyleSheet, SafeAreaView, ScrollView, View, Platform, TouchableOpacity, Text } from 'react-native';
 import EvsuHeader from './sub/EvsuHeader';
 import MainOptionsContainer from './sub/MainOptionsContainer';
 import { 
@@ -8,7 +8,8 @@ import {
   faGlobe,             
   faGraduationCap, 
   faBook, 
-  faInfo } from '@fortawesome/free-solid-svg-icons'; 
+  faInfo } from '@fortawesome/free-solid-svg-icons';
+import { create } from 'react-test-renderer';
 
 const Main = ({ navigation, sDim, wDim }) => {
   return (

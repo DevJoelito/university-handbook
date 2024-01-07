@@ -71,59 +71,50 @@ const notifLength = (notif, comNotif) => {
   let n = [];
   
   if (notif != '__error__' && notif.length && comNotif) {
-    let eventNotifCount   = parseInt(notif[0].chapter_count) - parseInt(comNotif[0].chapterNotifCount);
-    let chapterNotifCount = parseInt(notif[0].event_count) - parseInt(comNotif[0].eventNotifCount); 
+    let eventNotifCount   = parseInt(notif[0].event_count) - parseInt(comNotif[0].eventNotifCount);
+    let chapterNotifCount = parseInt(notif[0].chapter_count) - parseInt(comNotif[0].chapterNotifCount);
     let allNotifCount     = eventNotifCount + chapterNotifCount;
     n                     = [{ eventNotifCount, chapterNotifCount, allNotifCount }];
   }
 
+
   return n;
 }
 
-const overWriteNotif = (notif, comNotif, notType) => {
-  let ex = comNotif;
-
-  if (notif != '__error__' && notif.length && comNotif) {
-    if(notType == 'event') {
-      ex[0].eventNotifCount = notif[0].event_count;
-    } else if(notType == 'chapter') {
-      ex[0].chapterNotifCount = notif[0].chapter_count;
-    }
-
-    try {
-      writeLocal('comNotif.json', JSON.stringify(comNotif));
-    } catch(e) {}
-
+const overWriteNotif = async (ahead, behind, type) => {
+  let moded = behind;
+  
+  if(type == 'event') {
+    moded[0].event_count = ahead[0].event_count;
+  } else if(type == 'chapter') {
+    moded[0].chapter_count = ahead[0].chapter_count;
   }
 
-  return ex;
+  try {
+    await writeLocal('comNotif.json', JSON.stringify(moded));
+  } catch(e) {}
 }
 
 const EvsuHeader = ({ navigation, sDim, wDim }) => {
-  let [notif, setNotif]           = useState([]);
-  let [notifCount, setNotifCount] = useState([]);
-  let [showBox, setShowBox]       = useState(false);
-  let [refresh, setRefresh]       = useState(true);
+  let [notif, setNotif]             = useState([{"chapter_count":"0", "event_count":"0"}]);
+  let [behindNotif, setBehindNotif] = useState([{"chapter_count":"0", "event_count":"0"}]);
+  let [showBox, setShowBox]         = useState(false);
+  let [refresh, setRefresh]         = useState(true);
 
   useEffect(() => {
     let focusListener = navigation.addListener('focus', async () => {
-      let comNotif = false;
-
       setNotif(await getNotif());
-      
-      try {
-        comNotif = await readLocalFile('comNotif.json'); 
-        
-        if(!comNotif) {
-          await writeLocal('comNotif.json', '[{"eventNotifCount":"0","chapterNotifCount":"0","allNotifCount":"0"}]');
-        } else {
-          comNotif = JSON.parse(comNotif);
-        }
-      } catch(e) {
-        console.log('error');
-      }
 
-      setNotifCount(notifLength(notif, comNotif));
+      try {
+        let behNotif = await readLocalFile('comNotif.json'); 
+        
+        if(!behNotif) {
+          await writeLocal('comNotif.json', '[{"chapter_count":"0","event_count":"0"}]');
+        } else {
+          setBehindNotif(JSON.parse(behNotif));
+        }
+      } catch(e) {}
+
       setRefresh(false);
     })
 
@@ -170,22 +161,66 @@ const EvsuHeader = ({ navigation, sDim, wDim }) => {
             position : 'absolute', 
             top      : (wDim.height * 0.015), 
             right    : (wDim.width * 0.02) }}>
-              {/* <TouchableOpacity onPress = { () => navigation.navigate('EventsView') }> */}
               <TouchableOpacity onPress = { () => setShowBox(!showBox) } >
                 {
-                  (notif != 0 && notif != '__error__') && <View style = {{ top : (wDim.height * 0.015), right : (wDim.width * 0.053), width : (wDim.height * 0.018), height : (wDim.height * 0.018), borderWidth : 1.5, position : 'absolute', backgroundColor : 'blue', zIndex : 2, borderRadius : 100, backgroundColor : '#710000' }}></View>
+                  ((parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) != 0 || (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) != 0 && notif != '__error__') && <View style = {{ 
+                                                            top             : 0, 
+                                                            right           : (wDim.width * 0.040), 
+                                                            borderWidth     : 1.5, 
+                                                            position        : 'absolute', 
+                                                            zIndex          : 2, 
+                                                            borderRadius    : 100,
+                                                            backgroundColor : '#710000' }}>    
+                                                            <Text style = {{ 
+                                                              color      : 'white',
+                                                              fontWeight : 'bold',
+                                                              fontSize   : (wDim.width * 0.035),
+                                                              padding    : 2
+                                                             }}>
+                                                              { (parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) + (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) }
+                                                            </Text>
+                                                          </View>
                 }
                 <FontAwesomeIcon 
                   size  = { (sDim.height * 0.035) }
                   icon  = { faBell } />
               </TouchableOpacity>
           </View>
-          <TouchableOpacity style = {{ display : (showBox) ? 'block' : 'none', position : 'absolute', width : '100%', top : 0, height : (wDim.height) }} onPress = { () => setShowBox(!showBox) }>
+          <TouchableOpacity style = {{ 
+            display  : (showBox) ? 'block' : 'none', 
+            position : 'absolute', 
+            width    : '100%', 
+            top      : 0, 
+            height   : (wDim.height) 
+          }} 
+            onPress = { () => setShowBox(!showBox) }>
           </TouchableOpacity>
-          <View style = {{ zIndex : 2, display : (showBox) ? 'block' : 'none', position : 'absolute', top : (wDim.height * 0.062), right : (wDim.width * 0.01), width : (wDim.width * 0.75), backgroundColor : 'transparent' }}>
-            <View style = {{ position : 'absolute', right : (wDim.width * 0.024), backgroundColor : 'white', width : (wDim.width * 0.05), height : (wDim.width * 0.05), transform : 'rotate(-45deg)', borderWidth : 0.5, borderColor : '#abb2b9' }}>
+          <View style = {{ 
+            zIndex          : 2, 
+            display         : (showBox) ? 'block' : 'none', 
+            position        : 'absolute', 
+            top             : (wDim.height * 0.062), 
+            right           : (wDim.width * 0.01), 
+            width           : (wDim.width * 0.75), 
+            backgroundColor : 'transparent' }}>
+            <View style = {{ 
+              position        : 'absolute', 
+              right           : (wDim.width * 0.024), 
+              backgroundColor : 'white', 
+              width           : (wDim.width * 0.05), 
+              height          : (wDim.width * 0.05), 
+              transform       : 'rotate(-45deg)', 
+              borderWidth     : 0.5, 
+              borderColor     : '#abb2b9' }}>
             </View>
-            <View style = {{ position : 'absolute', top : (wDim.height * 0.0095), right : (wDim.width * 0.01), backgroundColor : 'white', width : '100%', borderWidth : 0.5, borderColor : '#abb2b9' }}>
+            <View style = {{ 
+              position        : 'absolute', 
+              top             : (wDim.height * 0.0095), 
+              right           : (wDim.width * 0.01), 
+              backgroundColor : 'white', 
+              width           : '100%', 
+              borderWidth     : 0.5, 
+              borderColor     : '#abb2b9' }}>
               <View style = {{ padding : (wDim.width * 0.02) }}>
                 {
                   (refresh) ? 
@@ -194,10 +229,47 @@ const EvsuHeader = ({ navigation, sDim, wDim }) => {
                   (notif == '__error__') ? 
                   <View><Text style = {{ color : 'black' }}>Something went wrong.</Text></View>
                   : 
-                  (notifCount.length) ?
+                  (behindNotif.length ) ?
+                  ((parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) == 0 && (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) == 0) ? 
+                  <View><Text style = {{ color : 'black' }}>0 notifications.</Text></View>
+                  :
                   <View>
-                    <TouchableOpacity onPress = { () => setNotifCount(notifLength(notif, overWriteNotif(notif, notifCount, 'chapter'))) } style = {{ paddingTop : 8, marginBottom : (wDim.height * 0.01), display : (notifCount[0].chapterNotifCount != 0) ? 'block' : 'none', padding : (wDim.height * 0.005), borderBottomWidth : 0.5, borderColor : '#abb2b9' }}><Text style = {{ color : 'black', fontSize : (wDim.height * 0.024), fontWeight : 'bold' }}>{ notifCount[0].chapterNotifCount } new chapter/s added.</Text></TouchableOpacity>
-                    <TouchableOpacity onPress = { () => setNotifCount(notifLength(notif, overWriteNotif(notif, notifCount, 'event'))) } style = {{ paddingTop : 8, marginBottom : (wDim.height * 0.01), display : (notifCount[0].eventNotifCount != 0) ? 'block' : 'none', padding : (wDim.height * 0.005), borderBottomWidth : 0.5, borderColor : '#abb2b9' }}><Text style = {{ color : 'black', fontSize : (wDim.height * 0.024), fontWeight : 'bold' }}>{ notifCount[0].eventNotifCount } new event/s added.</Text></TouchableOpacity>
+                    <TouchableOpacity style = {{ 
+                      paddingTop        : 8, 
+                      marginBottom      : (wDim.height * 0.01), 
+                      display           : (notif[0].chapter_count - behindNotif[0].chapter_count != 0) ? 'block' : 'none', 
+                      padding           : (wDim.height * 0.005), 
+                      borderBottomWidth : 0.5, 
+                      borderColor       : '#abb2b9' }}
+                      onPress = { () => {
+                        overWriteNotif(notif, behindNotif, 'chapter');
+                        navigation.navigate('HandBookView');
+                      } }>
+                      <Text style = {{ 
+                        color      : 'black', 
+                        fontSize   : (wDim.height * 0.024), 
+                        fontWeight : 'bold' }}>
+                        { (parseInt(notif[0].chapter_count) - parseInt(behindNotif[0].chapter_count)) } new chapter/s added.
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style = {{ 
+                      paddingTop        : 8, 
+                      marginBottom      : (wDim.height * 0.01), 
+                      display           : (notif[0].event_count - behindNotif[0].event_count != 0) ? 'block' : 'none', 
+                      padding           : (wDim.height * 0.005), 
+                      borderBottomWidth : 0.5, 
+                      borderColor       : '#abb2b9' }}
+                      onPress = { () => {
+                        overWriteNotif(notif, behindNotif, 'event');
+                        navigation.navigate('EventsView');
+                      } }>
+                      <Text style = {{ 
+                        color      : 'black', 
+                        fontSize   : (wDim.height * 0.024), 
+                        fontWeight : 'bold' }}>
+                        { (parseInt(notif[0].event_count) - parseInt(behindNotif[0].event_count)) } new event/s added.
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                   :
                   <View><Text style = {{ color : 'black' }}>0 notifications.</Text></View>
