@@ -17,9 +17,9 @@ const ChaptersViewCon = ({ wDim, sDim, title, article, webContent }) => {
         try {
             await Tts.getInitStatus();
           
-            if(voiceOn) {
+            if(voiceOn && text.trim() != "") {
                 Tts.speak(text);
-            } else if (!text.trim()) {
+            } else if (voiceOn && text.trim() == "") {
                 Tts.speak('No text');
             } else {
                 Tts.stop();
@@ -52,7 +52,7 @@ const ChaptersViewCon = ({ wDim, sDim, title, article, webContent }) => {
                 <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#822121' />
             }
             </TouchableOpacity>
-            <TouchableOpacity onPress = { () => { speakTheEvsu(speak, article); setSpeak(!speak); } } style = {{ marginRight : (wDim.width * 0.028), position : 'absolute', right : (wDim.width * 0.09), top : (wDim.height * 0.008), padding : (wDim.height * 0.005) }}>
+            <TouchableOpacity onPress = { () => { speakTheEvsu(!speak, article); setSpeak(!speak); } } style = {{ marginRight : (wDim.width * 0.028), position : 'absolute', right : (wDim.width * 0.09), top : (wDim.height * 0.008), padding : (wDim.height * 0.005) }}>
             {
                 (!speak) ? 
                 <FontAwesomeIcon icon={ faVolumeDown } size = { sDim.height * 0.020 } color = '#822121' />

@@ -15,6 +15,7 @@ import ChaptersView from './components/ChaptersView';
 import MvhView from './components/MvhView';
 import MapCon from './components/MapCon'
 import ReportView from './components/ReportView';
+import ContactUsView from './components/ContactUsView';
 import AppHeaderLogo from './components/sub/AppHeaderLogo';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -158,6 +159,16 @@ const ReportViewView = ({ navigation }) => {
   );
 }
 
+const ContactUsViewView = ({ navigation }) => {
+  return (
+    <ContactUsView
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
+    />
+  );
+}
+
 const ComponentView = ({ route }) => {
   return (
     <Drawer.Navigator 
@@ -273,17 +284,29 @@ const ComponentView = ({ route }) => {
           },
           drawerLabel : 'Report'
         }} />
+        <Drawer.Screen 
+          name      = "ContactUsView"
+          component = { ContactUsViewView }
+          options   = {{ 
+            headerTitle : () => <AppHeaderLogo 
+                                sDim  = { screen }
+                                title = 'Report' />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          },
+          drawerLabel : 'Contact Us'
+        }} />
       <Drawer.Screen 
         name      = "AboutUsView"
         component = { AboutUsView }
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
-                                title = 'About Us' />,  
+                                title = 'About' />,  
           headerStyle : {
             backgroundColor : '#710000',
           },
-          drawerLabel : 'About Us'
+          drawerItemStyle   : { display : 'none' }
         }} />
       <Drawer.Screen 
         name          = "ChaptersView"

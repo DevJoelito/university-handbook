@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { TouchableOpacity, ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl } from 'react-native';
 import * as RNFS from 'react-native-fs';
-import FastImage from 'react-native-fast-image';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
-import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
+import EventsCon from './sub/EventsCon';
 
 const writeLocal = async (fileName, content) => {
   try {
@@ -71,8 +68,6 @@ const getEvents = async () => {
 const Events = ({ navigation, sDim, wDim }) => {  
   let [events, setEvents]   = useState([]);
   let [refresh, setRefresh] = useState(true);
-  let [down, setDown]       = useState(false);
-  let [show, setShow]       = useState(false);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
@@ -138,42 +133,7 @@ const Events = ({ navigation, sDim, wDim }) => {
           :
           <FlatList
             data       = { events }
-            renderItem = { ({ item }) => { return (
-                                                    <View style = {{ marginBottom : (wDim.height * 0.02) }}>
-                                                      <View style = {{ width : '100%', backgroundColor : 'white', borderRadius : 5 }}>
-                                                        <View style = {{ height : (wDim.height * 0.20) }}>
-                                                          <FastImage
-                                                            style={{ width: '100%', height : '100%' }}
-                                                            source={{ uri: item.event_img }}
-                                                          />
-                                                        </View>
-                                                        <View>
-                                                          <View style = {{ display : 'flex', flexDirection : 'row', justifyContent : 'space-between', alignItems : 'center', padding : (wDim.width * 0.015) }}>
-                                                            <Text style = {{ 
-                                                              color      : 'black', 
-                                                              fontSize   : (wDim.height * 0.025), 
-                                                              fontWeight : 'bold' }}>{ item.name }</Text>
-                                                            <View style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', flexDirection : 'row' }}>
-                                                              <Text style = {{ 
-                                                                color      : 'black', 
-                                                                fontSize   : (wDim.height * 0.02),
-                                                                marginTop  : 'auto' }}>{ item.date_start }</Text> 
-                                                              <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} onPress = { () => {setDown(!down); setShow(!show)} }> 
-                                                                {
-                                                                  (down) ?
-                                                                  <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.022 } color = 'black' />
-                                                                  :
-                                                                  <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.022 } color = 'black' />
-                                                                }
-                                                              </TouchableOpacity>
-                                                            </View>
-                                                          </View>
-                                                          <View style = {{ display : ((show) ? "block" : "none"), padding : (wDim.width * 0.03) }}>
-                                                            <Text style = {{ color : 'black' }}>{ item.description }</Text>
-                                                          </View>
-                                                        </View>
-                                                      </View>
-                                                    </View>)} }
+            renderItem = { ({ item }) => { return ( <EventsCon wDim = { wDim } sDim = { sDim } item = { item } /> )} }
             refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
           />
         }
