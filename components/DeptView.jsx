@@ -40,20 +40,20 @@ const readLocalFile = async (fileName) => {
   }
 }
 
-const getDeptName = async () => {
+const getDeptName = async (camp) => {
   try {
-    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?dept_list=1`);
+    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?camp=${camp}`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
 
     let objRes = JSON.parse(data);
 
-    if(!await writeLocal('deptList.json', data)) return objRes;
+    if(!await writeLocal(`${camp}_deptList.json`, data)) return objRes;
     
     return objRes
   } catch(e) {
-    let final = await readLocalFile('deptList.json');
+    let final = await readLocalFile(`${camp}_deptList.json`);
 
     if(!final) return '__error__';
 
@@ -65,18 +65,20 @@ const getDeptName = async () => {
   }
 }
 
-const DeptView = ({ navigation, sDim, wDim }) => {  
+const DeptView = ({ navigation, sDim, wDim, campId }) => {  
+  console.log(campId);
+
   let [deptNames, setDeptNames] = useState([]);
   let [refresh, setRefresh]     = useState(true);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
-      setDeptNames(await getDeptName());
+      setDeptNames(await getDeptName(campId));
       setRefresh(false);
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, campId]);
 
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
@@ -90,15 +92,12 @@ const DeptView = ({ navigation, sDim, wDim }) => {
   const refreshList = useCallback(async () => {
     setDeptNames([]);
     setRefresh(true);
-    setDeptNames(await getDeptName());
+    setDeptNames(await getDeptName(campId));
     setRefresh(false);
-  }, [])
+  }, [campId]);
   
   return (
     <SafeAreaView style = {{ flex : 1 }}>
-      <View style = {{ paddingLeft : (wDim.width * 0.04), paddingTop : (wDim.height * 0.02) }}>
-        <Text style = {{ color : 'black', fontSize : (wDim.height * 0.030) }}>Select Department:</Text>
-      </View>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 
         paddingLeft  : (sDim.width * 0.01), 
@@ -134,16 +133,21 @@ const DeptView = ({ navigation, sDim, wDim }) => {
             </View>
           </View>
           :
-          <FlatList
-            data       = { deptNames }
-            renderItem = { ({ item }) => { return (<DepartmentCon 
-                                                    navigation = { navigation }
-                                                    title      = { item.name }
-                                                    deptId     = { item.id }
-                                                    sDim       = { sDim }
-                                                    wDim       = { wDim } />)} }
-            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
-          />
+          <View>
+            <View style = {{ paddingLeft : (wDim.width * 0.04), paddingTop : (wDim.height * 0.01), paddingBottom : (wDim.height * 0.02) }}>
+              <Text style = {{ color : 'black', fontSize : (wDim.height * 0.030) }}>Select Department:</Text>
+            </View>
+            <FlatList
+              data       = { deptNames }
+              renderItem = { ({ item }) => { return (<DepartmentCon 
+                                                      navigation = { navigation }
+                                                      title      = { item.name }
+                                                      deptId     = { item.id }
+                                                      sDim       = { sDim }
+                                                      wDim       = { wDim } />)} }
+              refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
+            />
+          </View>
         }
       </View>
     </SafeAreaView>

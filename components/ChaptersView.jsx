@@ -60,7 +60,7 @@ const readLocalFile = async (fileName) => {
 
 const getChapter = async (chapter) => {
   try {
-    let result   = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?chapter=${ chapter }`);
+    let result   = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?chapter=${ chapter }`);
     let response = await result.text();
     if(response == '__error__') return response;
     

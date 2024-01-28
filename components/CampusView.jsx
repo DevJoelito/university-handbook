@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { FlatList, SafeAreaView, Text, View, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import EvsuLinkContainer from './sub/EvsuLinksContainer';
+import React, { useEffect, useState, useCallback } from 'react';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, TouchableOpacity } from 'react-native';
+import CampusCon from './sub/CampusCon';
 import * as RNFS from 'react-native-fs';
 
 const writeLocal = async (fileName, content) => {
@@ -41,20 +40,20 @@ const readLocalFile = async (fileName) => {
   }
 }
 
-const getLinks = async () => {
+const getDeptName = async () => {
   try {
-    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?links=1`);
+    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?campus_list=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
-    
+
     let objRes = JSON.parse(data);
 
-    if(!await writeLocal('links.json', data)) return objRes;
+    if(!await writeLocal('campusList.json', data)) return objRes;
     
-    return objRes;
+    return objRes
   } catch(e) {
-    let final = await readLocalFile('links.json');
+    let final = await readLocalFile('campusList.json');
 
     if(!final) return '__error__';
 
@@ -66,22 +65,22 @@ const getLinks = async () => {
   }
 }
 
-const Links = ({ navigation, sDim, wDim }) => {  
-  let [links, setLinks]            = useState([]);
-  let [refresh, setRefresh]        = useState(true);
+const CampusView = ({ navigation, sDim, wDim }) => {  
+  let [campusNames, setCampusNames] = useState([]);
+  let [refresh, setRefresh]     = useState(true);
 
   useEffect(() => {
-    let focusListener = navigation.addListener('focus', async () => {
-      setLinks(await getLinks()); 
+    let unsubscribe = navigation.addListener('focus', async () => {
+      setCampusNames(await getDeptName());
       setRefresh(false);
     });
 
-    return focusListener;
+    return unsubscribe;
   }, [navigation]);
 
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
-      setLinks([]);
+      setCampusNames([]);
       setRefresh(true);
     });
 
@@ -89,12 +88,12 @@ const Links = ({ navigation, sDim, wDim }) => {
   }, [navigation]);
 
   const refreshList = useCallback(async () => {
+    setCampusNames([]);
     setRefresh(true);
-    setLinks([]);
-    setLinks(await getLinks());
+    setCampusNames(await getDeptName());
     setRefresh(false);
-  }, []);
-
+  }, [])
+  
   return (
     <SafeAreaView style = {{ flex : 1 }}>
       <View style = {{ 
@@ -112,7 +111,7 @@ const Links = ({ navigation, sDim, wDim }) => {
             <ActivityIndicator size="large" color="#900303" />
           </View> 
           :
-          (links == '__error__') ? 
+          (campusNames == '__error__') ? 
           <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }}>
             <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
             <View>
@@ -120,11 +119,11 @@ const Links = ({ navigation, sDim, wDim }) => {
                 <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
               </TouchableOpacity>
             </View>
-          </View> 
+          </View>
           : 
-          (!links.length) ? 
+          (!campusNames.length) ? 
           <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }}>
-            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No links found.</Text>
+            <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No campus found.</Text>
             <View>
               <TouchableOpacity>
                 <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
@@ -132,20 +131,25 @@ const Links = ({ navigation, sDim, wDim }) => {
             </View>
           </View>
           :
-          <FlatList
-            data       = { links }
-            renderItem = { ({ item }) => { return (<EvsuLinkContainer 
-                                                    navigation = { navigation }
-                                                    title      = { item.name }
-                                                    link       = { item.path }
-                                                    sDim       = { sDim }
-                                                    wDim       = { wDim } />)} }  
-            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
-          />
+          <View>
+            <View style = {{ paddingLeft : (wDim.width * 0.04), paddingTop : (wDim.height * 0.01), paddingBottom : (wDim.height * 0.02) }}>
+              <Text style = {{ color : 'black', fontSize : (wDim.height * 0.030) }}>Select Campus:</Text>
+            </View>
+            <FlatList
+              data       = { campusNames }
+              renderItem = { ({ item }) => { return (<CampusCon 
+                                                      navigation = { navigation }
+                                                      title      = { item.campus_name }
+                                                      campId     = { item.id }
+                                                      sDim       = { sDim }
+                                                      wDim       = { wDim } />)} }
+              refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
+            />
+          </View>
         }
       </View>
     </SafeAreaView>
   );
 }
 
-export default Links;
+export default CampusView;

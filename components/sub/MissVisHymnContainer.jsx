@@ -1,18 +1,12 @@
-import { Text, View, TouchableOpacity, Linking } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 
-const MissVissHymnContainer = ({ navigation, title, sDim, wDim }) => {
-  let colorVal = '#7e1416';
-
-  if(title == 'Mission') {
-    colorVal = '#0b6376';
-  } else if(title == 'Hymn') {
-    colorVal = '#a568aa';
-  }
-
+const MissVissHymnContainer = ({ navigation, title, sDim, mission, vision, wDim }) => {
   return (
     <TouchableOpacity 
       style = {{
-        height          : (sDim.height * 0.15),
+        height          : (sDim.height * 0.11),
+        borderTopWidth  : 1,
+        borderBottomWidth : 1,
         backgroundColor : '#F7EFEF',
         marginBottom    : (sDim.height * 0.015),
         alignItems      : 'center',
@@ -20,11 +14,10 @@ const MissVissHymnContainer = ({ navigation, title, sDim, wDim }) => {
         flexDirection   : 'row',
         marginRight     : (sDim.width * 0.06),
         marginLeft      : (sDim.width * 0.06),
-        backgroundColor : colorVal,
       }}
-      onPress = { () => navigation.navigate('ComponentView', { screen : 'MvhView', title }) }>
+      onPress = { () => navigation.navigate('ComponentView', { screen : 'MvhView', title, mission, vision }) }>
       <View>
-        <Text style = {{ color : 'white', fontWeight : 'bold', fontSize : (sDim.height * 0.026) }}>
+        <Text style = {{ color : 'black', fontWeight : 'bold', fontSize : (sDim.height * 0.020) }}>
             { title }
         </Text>
       </View>

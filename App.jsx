@@ -6,6 +6,7 @@ import Main from './components/Main';
 import HandBook from './components/HandBook';
 import DeptView from './components/DeptView';
 import ProgOfferedView from './components/ProgOfferedView';
+import CampusView from './components/CampusView';
 import Map from './components/Map';
 import Links from './components/Links';
 import MissVissHymn from './components/MissVisHymn';
@@ -44,12 +45,23 @@ const HandBookView = ({ navigation }) => {
   );
 }
 
-const DepartmentView = ({ navigation }) => {
+const CampusesView = ({ navigation }) => {
+  return (
+    <CampusView 
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
+    />
+  );
+}
+
+const DepartmentView = ({ navigation, route }) => {
   return (
     <DeptView 
       sDim       = { screen }
       wDim       = { window }
       navigation = { navigation }
+      campId     = { route.params.campId }
     />
   );
 }
@@ -132,7 +144,8 @@ const MvhComp = ({ navigation, route }) => {
     <MvhView
       sDim       = { screen }
       wDim       = { window }
-      titleName  = { route.params.title }
+      mission    = { route.params.mission }
+      vision     = { route.params.vision }
       navigation = { navigation }
     />
   );
@@ -212,8 +225,8 @@ const ComponentView = ({ route }) => {
           drawerLabel : 'Handbook'
         }} />
       <Drawer.Screen 
-        name      = "DeptView"
-        component = { DepartmentView }
+        name      = "CampusesView"
+        component = { CampusesView }
         backBehavior = 'firstRoute'
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
@@ -334,19 +347,36 @@ const ComponentView = ({ route }) => {
             },
             drawerItemStyle   : { display : 'none' }
           }} />
-          <Drawer.Screen 
-            name          = "MvhView"
-            component     = { MvhComp }
-            initialParams = {{ title : route.params == undefined ? '' : route.params.title }}
-            options       = {{ 
-              headerTitle : () => <AppHeaderLogo 
-                                    sDim  = { screen }
-                                    title = { route.params == undefined ? '' : route.params.title } />,  
-              headerStyle : {
-                backgroundColor : '#710000',
-              },
-              drawerItemStyle   : { display : 'none' }
-          }} />
+        <Drawer.Screen 
+          name      = "DeptView"
+          component = { DepartmentView }
+          initialParams = {{ campId : route.params == undefined ? '' : route.params.campId }}
+          options   = {{ 
+            headerTitle : () => <AppHeaderLogo 
+                                  sDim  = { screen }
+                                  title = 'Program Offered' />,  
+            headerStyle : {
+              backgroundColor : '#710000',
+            },
+            drawerLabel : 'Program Offered',
+            drawerItemStyle   : { display : 'none' }
+        }} />
+        <Drawer.Screen 
+          name          = "MvhView"
+          component     = { MvhComp }
+          initialParams = {{ 
+                              mission: route.params == undefined ? '' : route.params.mission, 
+                              vision : route.params == undefined ? '' : route.params.vision 
+                            }}
+          options       = {{ 
+            headerTitle : () => <AppHeaderLogo 
+                                  sDim  = { screen }
+                                  title = { route.params == undefined ? '' : route.params.title } />,
+            headerStyle : {
+              backgroundColor : '#710000',
+            },
+            drawerItemStyle   : { display : 'none' }
+        }} />
           <Drawer.Screen 
             name          = "MapWebView"
             component     = { MapViewCon }

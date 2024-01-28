@@ -42,18 +42,18 @@ const readLocalFile = async (fileName) => {
 
 const getProgName = async (dept) => {
   try {
-    let result = await fetch(`https://barbac.000webhostapp.com/folders/evsu_handbook/api/get_handbook.php?dept=${dept}`);
+    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?dept=${dept}`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
 
     let objRes = JSON.parse(data);
 
-    if(!await writeLocal(`${dept}_progName.txt`, data)) return objRes;
+    if(!await writeLocal(`${dept}_progList.json`, data)) return objRes;
 
     return objRes;
   } catch(e) {
-    let final = await readLocalFile(`${dept}_progName.txt`);
+    let final = await readLocalFile(`${dept}_progList.json`);
 
     if(!final) return '__error__';
 

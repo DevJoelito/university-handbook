@@ -37,7 +37,7 @@ const Main = ({ navigation, sDim, wDim }) => {
               wDim       = { wDim } 
               icon       = { faChalkboardTeacher }
               title      = 'Program Offered'
-              navTitle   = 'DeptView' />
+              navTitle   = 'CampusesView' />
           </View>
 
           <View style = { styles.subConProps }>
