@@ -44,7 +44,7 @@ const readLocalFile = async (fileName) => {
 
 const getMaps = async () => {
   try {
-    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?map_list=1`);
+    let result = await fetch(`http://evsu-handbook.wuaze.com/sites/evsu_handbook/api/get_handbook.php?map_list=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;

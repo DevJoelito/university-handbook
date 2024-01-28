@@ -42,7 +42,7 @@ const readLocalFile = async (fileName) => {
 
 const getDeptName = async (camp) => {
   try {
-    let result = await fetch(`http://192.168.1.7/evsu_handbook/api/get_handbook.php?camp=${camp}`);
+    let result = await fetch(`http://evsu-handbook.wuaze.com/sites/evsu_handbook/api/get_handbook.php?camp=${camp}`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
