@@ -3,7 +3,7 @@ import { SafeAreaView, Text, View,TextInput, TouchableOpacity, Alert, ActivityIn
 
 const submitReport = async (data) => {
     try {
-        let response = await fetch('http://evsu-handbook.wuaze.com/sites/evsu_handbook/api/get_handbook.php?send_report=1', {
+        let response = await fetch('https://evsuhandbooksite.000webhostapp.com/sites/evsu_handbook/api/get_handbook.php?send_report=1', {
             method  : "POST",
             headers : {
                 Accept         : 'application/json',

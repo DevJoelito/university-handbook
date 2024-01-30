@@ -42,7 +42,7 @@ const readLocalFile = async (fileName) => {
 
 const getEvents = async () => {
   try {
-    let result = await fetch(`http://evsu-handbook.wuaze.com/sites/evsu_handbook/api/get_handbook.php?events=1`);
+    let result = await fetch(`https://evsuhandbooksite.000webhostapp.com/sites/evsu_handbook/api/get_handbook.php?events=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
