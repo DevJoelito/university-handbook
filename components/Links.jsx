@@ -138,6 +138,7 @@ const Links = ({ navigation, sDim, wDim }) => {
                                                     navigation = { navigation }
                                                     title      = { item.name }
                                                     link       = { item.path }
+                                                    img        = { item.img }
                                                     sDim       = { sDim }
                                                     wDim       = { wDim } />)} }  
             refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }

@@ -60,14 +60,12 @@ const getDeptName = async (camp) => {
     try {
       return JSON.parse(final);
     } catch(e) {
-      return '__errror__';
+      return '__error__';
     }
   }
 }
 
 const DeptView = ({ navigation, sDim, wDim, campId }) => {  
-  console.log(campId);
-
   let [deptNames, setDeptNames] = useState([]);
   let [refresh, setRefresh]     = useState(true);
 
@@ -143,6 +141,7 @@ const DeptView = ({ navigation, sDim, wDim, campId }) => {
                                                       navigation = { navigation }
                                                       title      = { item.name }
                                                       deptId     = { item.id }
+                                                      deptImg    = { item.dept_img }
                                                       sDim       = { sDim }
                                                       wDim       = { wDim } />)} }
               refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }

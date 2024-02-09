@@ -14,8 +14,8 @@ const EventsCon = ({ wDim, sDim, item }) => {
             <View style = {{ width : '100%', backgroundColor : 'white', borderRadius : 5 }}>
                 <View style = {{ height : (wDim.height * 0.20) }}>
                     <FastImage
-                    style={{ width: '100%', height : '100%' }}
-                    source={{ uri: item.event_img }}
+                        style={{ width: '100%', height : '100%' }}
+                        source={{ uri: item.event_img }}
                     />
                 </View>
                 <View>

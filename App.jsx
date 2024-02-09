@@ -73,6 +73,7 @@ const ProgramOfferedView = ({ navigation, route }) => {
       wDim       = { window }
       navigation = { navigation }
       deptId     = { route.params.deptId }
+      deptImg    = { route.params.deptImg }
     />
   );
 }
@@ -337,7 +338,8 @@ const ComponentView = ({ route }) => {
         <Drawer.Screen 
           name          = "ProgOfferedView"
           component     = { ProgramOfferedView }
-          initialParams = {{ deptId : route.params == undefined ? '' : route.params.deptId }}
+          initialParams = {{ deptId : route.params == undefined ? '' : route.params.deptId,
+                             deptImg : route.params == undefined ? '' : route.params.deptImg }}
           options       = {{ 
             headerTitle : () => <AppHeaderLogo 
                                   sDim  = { screen }

@@ -1,6 +1,6 @@
 import { Text, View, TouchableOpacity, Image } from 'react-native';
 
-const DepartmentCon = ({ navigation, title, sDim, wDim, deptId }) => {
+const DepartmentCon = ({ navigation, title, sDim, wDim, deptId, deptImg }) => {
   return (
     <TouchableOpacity 
       style = {{
@@ -17,7 +17,7 @@ const DepartmentCon = ({ navigation, title, sDim, wDim, deptId }) => {
         alignItems        : 'center',
         marginBottom      : (wDim.height * 0.02)
       }}
-      onPress = { () => navigation.navigate('ComponentView', { screen : 'ProgOfferedView', deptId }) }>
+      onPress = { () => navigation.navigate('ComponentView', { screen : 'ProgOfferedView', deptId, deptImg }) }>
       <View style = {{ marginLeft : (wDim.width * 0.02), marginRight : (wDim.width * 0.04) }}>
         <Image 
             style = {{

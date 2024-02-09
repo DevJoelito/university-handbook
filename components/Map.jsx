@@ -37,7 +37,6 @@ const readLocalFile = async (fileName) => {
 
     return resultFile;
   } catch(e) {
-    console.log(e);
     return false;
   }
 }
@@ -55,7 +54,6 @@ const getMaps = async () => {
 
     return objRes;
   } catch(e) {
-    console.log(e);
     let final = await readLocalFile('map.json');
 
     if(!final) return '__error__';

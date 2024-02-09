@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, ScrollView, TouchableOpacity } from 'react-native';
 import ProgramOfferCon from './sub/ProgramOfferCon';
 import * as RNFS from 'react-native-fs';
+import FastImage from 'react-native-fast-image';
 
 const writeLocal = async (fileName, content) => {
   try {
@@ -65,7 +66,7 @@ const getProgName = async (dept) => {
   }
 }
 
-const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {  
+const ProgOfferedView = ({ navigation, sDim, wDim, deptId, deptImg }) => {
   let [programs, setPrograms] = useState([]);
   let [refresh, setRefresh]   = useState(true);
 
@@ -131,17 +132,26 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId }) => {
             </View>
           </View>
           :
-          <FlatList
-            data       = { programs }
-            renderItem = { ({ item }) => { return (
-              <ProgramOfferCon 
-                navigation   = { navigation }
-                programTitle = { item.name }
-                sDim         = { sDim }
-                wDim         = { wDim } />
-            )} }
-            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
-          />
+          <View style = {{ flex : 1 }}>
+            <View style = {{ height : (wDim.height * 0.20), display : (!deptImg ? 'none' : 'block'), marginBottom : (wDim.height * 0.014) }}>
+                <FastImage
+                    style={{ width: '100%', height : '100%' }}
+                    source={{ uri: deptImg }}
+                />
+            </View>
+            <FlatList
+              data       = { programs }
+              renderItem = { ({ item }) => { return (
+                <ProgramOfferCon 
+                  navigation   = { navigation }
+                  programTitle = { item.name }
+                  programDesc  = { item.program_desc }
+                  sDim         = { sDim }
+                  wDim         = { wDim } />
+              )} }
+              refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
+            />
+          </View>
         }
       </View>
     </SafeAreaView>
