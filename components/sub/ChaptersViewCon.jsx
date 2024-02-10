@@ -5,7 +5,6 @@ import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import { faVolumeDown } from '@fortawesome/free-solid-svg-icons/faVolumeDown';
 import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp';
-import { WebView } from 'react-native-webview';
 import Tts from 'react-native-tts';
 import RenderHtml from 'react-native-render-html';
 
@@ -40,26 +39,28 @@ const ChaptersViewCon = ({ wDim, sDim, title, article, webContent }) => {
             marginVertical   : (wDim.height * 0.005),
             padding          : (wDim.height * 0.012),
         }}>
-        <View style = {{ position : 'relative' }}>
-            <View style = {{ marginBottom : (wDim.height * 0.009) }}>
-            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.028) }}>{ title }</Text>
+        <View style = {{ display : 'flex', flexDirection : 'row' }}>
+            <View style = {{ marginBottom : (wDim.height * 0.009), width : (wDim.width * 0.75) }}>
+                <Text style = {{ color : 'black', fontSize : (wDim.height * 0.025), textAlign: 'justify' }}>{ title }</Text>
             </View>
-            <TouchableOpacity onPress = { () => setDown(!down) } style = {{ marginRight : (wDim.width * 0.028), position : 'absolute', right : (wDim.width * 0.008), top : (wDim.height * 0.008), padding : (wDim.height * 0.005) }}>
-            {
-                down ? 
-                <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.020 } color = '#822121' />
-                :
-                <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#822121' />
-            }
-            </TouchableOpacity>
-            <TouchableOpacity onPress = { () => { speakTheEvsu(!speak, article); setSpeak(!speak); } } style = {{ marginRight : (wDim.width * 0.028), position : 'absolute', right : (wDim.width * 0.09), top : (wDim.height * 0.008), padding : (wDim.height * 0.005) }}>
-            {
-                (!speak) ? 
-                <FontAwesomeIcon icon={ faVolumeDown } size = { sDim.height * 0.020 } color = '#822121' />
-                :
-                <FontAwesomeIcon icon={ faVolumeUp } size = { sDim.height * 0.020 } color = '#822121' />
-            }
-            </TouchableOpacity>
+            <View style = {{ marginBottom : (wDim.height * 0.009), width : (wDim.width * 0.15), display : 'flex', flexDirection : 'row', justifyContent : 'space-around', alignItems : 'center' }}>
+                <TouchableOpacity onPress = { () => setDown(!down) }>
+                {
+                    down ? 
+                    <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.020 } color = '#822121' />
+                    :
+                    <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#822121' />
+                }
+                </TouchableOpacity>
+                <TouchableOpacity onPress = { () => { speakTheEvsu(!speak, article); setSpeak(!speak); } }>
+                {
+                    !speak ? 
+                    <FontAwesomeIcon icon={ faVolumeDown } size = { sDim.height * 0.020 } color = '#822121' />
+                    :
+                    <FontAwesomeIcon icon={ faVolumeUp } size = { sDim.height * 0.020 } color = '#822121' />
+                }
+                </TouchableOpacity>
+            </View>
         </View>
         <View style = {{ display : (down ? 'block' : 'none') }}>
             <RenderHtml

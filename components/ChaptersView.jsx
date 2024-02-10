@@ -60,7 +60,7 @@ const readLocalFile = async (fileName) => {
 
 const getChapter = async (chapter) => {
   try {
-    let result   = await fetch(`https://evsuhandbooksite.000webhostapp.com/sites/evsu_handbook/api/get_handbook.php?chapter=${ chapter }`);
+    let result   = await fetch(`http://192.168.1.6/evsu_handbook/api/get_handbook.php?chapter=${ chapter }`);
     let response = await result.text();
     if(response == '__error__') return response;
     
@@ -110,13 +110,19 @@ const ChaptersView = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
   }, [navigation]);
 
   const search = useCallback(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+
+      if(searchText.trim() == '') resolve(await getChapter(chapterId));
+
       let wordSearch = new RegExp(searchText, 'i');
       let chapLen    = content.length;
       let objRes     = [];
+      let res        = -1;
+      let combCont   = null;
   
       for(i = 0; i < chapLen; i++) {
-        let res = content[i].name.search(wordSearch, 'i');
+        combCont = content[i].name + content[i].content;
+        res = combCont.search(wordSearch, 'i');
   
         if(res >= 0) {
           objRes.push(content[i]);
@@ -127,7 +133,7 @@ const ChaptersView = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
 
       resolve(objRes);
     })
-  }, [content, searchText]);
+  }, [content, searchText, chapterId]);
 
   const useSearch = useCallback(async () => {
     setRefresh(true);
@@ -179,7 +185,7 @@ const ChaptersView = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
                 fontFamily   : 'Times New Roman'
               }}
               onChangeText = { setSearchText }/>
-              <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} onPress = { useSearch }>
+              <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} pressable = { refresh ? false : true } onPress = { useSearch }>
                 <FontAwesomeIcon icon={ faSearch } size = { sDim.height * 0.030 } color = '#710000' />
               </TouchableOpacity>
             <View style = {{ 

@@ -4,8 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons/faBookmark';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
+import RenderHtml from 'react-native-render-html';
 
-const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId }) => {
+const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId, content }) => {
   let [down, setDown] = useState(false);
 
   return (
@@ -37,7 +38,7 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId }) => {
                 justifyContent : 'center'
               }}>
                 <View>
-                  <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.027) }}>
+                  <Text style = {{ color : '#2C3E50', fontWeight : 'bold', fontSize : (sDim.height * 0.025) }}>
                       { title }
                   </Text>
                 </View>
@@ -54,7 +55,13 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId }) => {
           </TouchableOpacity>
         </View>
         <View style = {{ paddingTop : (wDim.height * 0.007), paddingBottom : (wDim.height * 0.01), paddingRight : (wDim.width * 0.015), paddingLeft : (wDim.width * 0.05), display : (down ? 'block' : 'none') }}>
-          <Text style = {{ color : 'black' }}>This is a sample short description.</Text>
+          <RenderHtml
+            source = {{ html : (content == null 
+                        ? '<style type="text/css">* { color : black; }</style><div style="text-align : center;">No content.</div>'
+                        : '<style type="text/css">* { color : black; }</style>' + content) }}
+            contentWidth = { wDim.width * 0.9 }
+            baseStyle    = {{ color : 'black' }}
+          />
         </View>
       </View>
     </TouchableOpacity>

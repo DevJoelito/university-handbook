@@ -44,7 +44,7 @@ const readLocalFile = async (fileName) => {
 
 const getChapterName = async () => {
   try {
-    let result = await fetch(`https://evsuhandbooksite.000webhostapp.com/sites/evsu_handbook/api/get_handbook.php?chapter_list=1`);
+    let result = await fetch(`http://192.168.1.6/evsu_handbook/api/get_handbook.php?chapter_list=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
@@ -98,20 +98,25 @@ const HandBook = ({ navigation, sDim, wDim }) => {
   }, []);
 
   const search = useCallback(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+
+      if(searchText.trim() == '') resolve(await getChapterName());
+
       let wordSearch = new RegExp(searchText, 'i');
       let chapLen    = chapterNames.length;
       let objRes     = [];
+      let res        = -1;
+      let combCont   = null;
   
       for(i = 0; i < chapLen; i++) {
-        let res = chapterNames[i].chapter_name.search(wordSearch, 'i');
+        combCont = chapterNames[i].chapter_name + chapterNames[i].content; 
+        res = combCont.search(wordSearch, 'i');
   
         if(res >= 0) {
           objRes.push(chapterNames[i]);
         }
       }
 
-      
       if(!objRes.length) return resolve([]);
 
       resolve(objRes);
@@ -192,6 +197,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
                                                     navigation = { navigation }
                                                     title      = { item.chapter_name }
                                                     chapId     = { item.id }
+                                                    content    = { item.content }
                                                     sDim       = { sDim }
                                                     wDim       = { wDim } />)} }
             refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> }
