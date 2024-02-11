@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { TouchableOpacity, Text, View, Image } from 'react-native';
 
-const ProgramOfferedCon = ({ programTitle, programDesc, sDim, wDim }) => {
-  let [tapped, setTapped] = useState(false);
+const ProgramOfferedCon = ({ programTitle, programDesc, sDim, wDim, navigation }) => {
 
   return (
-    <TouchableOpacity style = {{ marginBottom : (wDim.height * 0.02) }} onPress = { () => setTapped(!tapped) }>
+    <TouchableOpacity style = {{ marginBottom : (wDim.height * 0.02) }} onPress = { () => navigation.navigate('ComponentView', { screen : 'ProgInfoView', programTitle, content : programDesc }) }>
         <View style = {{ 
           borderBottomWidth : 1,
           marginLeft        : (wDim.width * 0.02),
@@ -31,14 +30,6 @@ const ProgramOfferedCon = ({ programTitle, programDesc, sDim, wDim }) => {
             </View>
             <View style = {{ width : (wDim.width * 0.75) }}>
               <Text style = {{ color : 'black', fontWeight : 700, fontSize : (wDim.height * 0.026), flex : 1, flexWrap : 'wrap' }}>{ programTitle }</Text>
-            </View>
-          </View>
-          <View style = {{ display : (tapped ? 'block' : 'none'), marginLeft : (wDim.height * 0.075), marginBottom : (wDim.height * 0.02) }}>
-            <View>
-              <Text style = {{ color : 'black', fontSize : 16, fontWeight : 700, fontStyle : 'italic' }}>Program Description:</Text>
-            </View>
-            <View style = {{ marginTop : (wDim.height * 0.01) }}>
-              <Text style = {{ color : 'black', fontSize : 15 }}>{ programDesc }</Text>
             </View>
           </View>
         </View>

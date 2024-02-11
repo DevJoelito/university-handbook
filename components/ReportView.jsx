@@ -37,8 +37,8 @@ const ReportView = ({ wDim, sDim, navigation }) => {
 
         setSending(false);
 
-        if(!studentId.trim() || !year.trim() || !course.trim() || !desc.trim()) {
-            Alert.alert('Incomplete Field', 'One or more fields have no value.', [
+        if(!desc.trim()) {
+            Alert.alert('Incomplete Field', 'No description added.', [
                 {
                     text    : 'OK', 
                     onPress : () => {
@@ -92,7 +92,7 @@ const ReportView = ({ wDim, sDim, navigation }) => {
                 <View style = {{ padding : (wDim.width * 0.04) }}>
                     <View style = {{ display : 'flex', flexDirection : 'row', justifyContent : 'center', alignItems : 'center', marginBottom : (wDim.height * 0.04) }}>
                         <View style = {{ width : '35%'}}>
-                            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.023) }}>STUDENT ID:</Text>
+                            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.023) }}>STUDENT ID: (optional)</Text>
                         </View>
                         <View style = {{ width : '65%' }}>
                             <TextInput style = {{ borderWidth : 1, height : (wDim.height * 0.05), color : 'black' }} onChangeText = { setStudentId } value = { studentId }/>
@@ -100,7 +100,7 @@ const ReportView = ({ wDim, sDim, navigation }) => {
                     </View>
                     <View style = {{ display : 'flex', flexDirection : 'row', justifyContent : 'center', alignItems : 'center', marginBottom : (wDim.height * 0.04) }}>
                         <View style = {{ width : '35%' }}>
-                            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.023) }}>YEAR:</Text>
+                            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.023) }}>YEAR: (optional)</Text>
                         </View>
                         <View style = {{ width : '65%' }}>
                             <TextInput style = {{ borderWidth : 1, height : (wDim.height * 0.05), color : 'black' }} onChangeText = { setYear } value = { year }/>
@@ -108,7 +108,7 @@ const ReportView = ({ wDim, sDim, navigation }) => {
                     </View>
                     <View style = {{ display : 'flex', flexDirection : 'row', justifyContent : 'center', alignItems : 'center', marginBottom : (wDim.height * 0.04) }}>
                         <View style = {{ width : '35%' }}>
-                            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.023) }}>COURSE:</Text>
+                            <Text style = {{ color : 'black', fontSize : (wDim.height * 0.023) }}>COURSE: (optional)</Text>
                         </View>
                         <View style = {{ width : '65%' }}>
                             <TextInput style = {{ borderWidth : 1, height : (wDim.height * 0.05), color : 'black' }} onChangeText = { setCourse } value = { course }/>

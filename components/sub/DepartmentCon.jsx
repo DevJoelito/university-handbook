@@ -17,7 +17,7 @@ const DepartmentCon = ({ navigation, title, sDim, wDim, deptId, deptImg }) => {
         alignItems        : 'center',
         marginBottom      : (wDim.height * 0.02)
       }}
-      onPress = { () => navigation.navigate('ComponentView', { screen : 'ProgOfferedView', deptId, deptImg }) }>
+      onPress = { () => navigation.navigate('ComponentView', { screen : 'ProgOfferedView', deptId, deptImg, title }) }>
       <View style = {{ marginLeft : (wDim.width * 0.02), marginRight : (wDim.width * 0.04) }}>
         <Image 
             style = {{

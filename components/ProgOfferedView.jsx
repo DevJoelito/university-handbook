@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, ScrollView, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, TouchableOpacity, Modal } from 'react-native';
 import ProgramOfferCon from './sub/ProgramOfferCon';
 import * as RNFS from 'react-native-fs';
 import FastImage from 'react-native-fast-image';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 const writeLocal = async (fileName, content) => {
   try {
@@ -43,7 +44,7 @@ const readLocalFile = async (fileName) => {
 
 const getProgName = async (dept) => {
   try {
-    let result = await fetch(`http://192.168.1.6/evsu_handbook/api/get_handbook.php?dept=${dept}`);
+    let result = await fetch(`https://evsuhandbooksite.000webhostapp.com/sites/evsu_handbook/api/get_handbook.php?dept=${dept}`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
@@ -68,7 +69,8 @@ const getProgName = async (dept) => {
 
 const ProgOfferedView = ({ navigation, sDim, wDim, deptId, deptImg }) => {
   let [programs, setPrograms] = useState([]);
-  let [refresh, setRefresh]   = useState(true);
+  let [refresh, setRefresh] = useState(true);
+  let [showPic, setShowPic] = useState(false); 
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
@@ -97,6 +99,9 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId, deptImg }) => {
   
   return (
     <SafeAreaView style = {{ flex : 1 }}>
+      <Modal visible = { showPic } onRequestClose = { () => setShowPic(!showPic) }>
+        <ImageViewer imageUrls = { [{ url : deptImg }] }/>
+      </Modal>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 
         paddingLeft  : (sDim.width * 0.01), 
@@ -133,12 +138,12 @@ const ProgOfferedView = ({ navigation, sDim, wDim, deptId, deptImg }) => {
           </View>
           :
           <View style = {{ flex : 1 }}>
-            <View style = {{ height : (wDim.height * 0.20), display : (!deptImg ? 'none' : 'block'), marginBottom : (wDim.height * 0.014) }}>
+            <TouchableOpacity onPress = { () => setShowPic(!showPic) } style = {{ height : (wDim.height * 0.20), display : (!deptImg ? 'none' : 'block'), marginBottom : (wDim.height * 0.014) }}>
                 <FastImage
                     style={{ width: '100%', height : '100%' }}
                     source={{ uri: deptImg }}
                 />
-            </View>
+            </TouchableOpacity>
             <FlatList
               data       = { programs }
               renderItem = { ({ item }) => { return (

@@ -17,6 +17,7 @@ import MvhView from './components/MvhView';
 import MapCon from './components/MapCon'
 import ReportView from './components/ReportView';
 import ContactUsView from './components/ContactUsView';
+import ProgInfoView from './components/ProgInfoView';
 import AppHeaderLogo from './components/sub/AppHeaderLogo';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -74,6 +75,16 @@ const ProgramOfferedView = ({ navigation, route }) => {
       navigation = { navigation }
       deptId     = { route.params.deptId }
       deptImg    = { route.params.deptImg }
+    />
+  );
+}
+
+const ProgIView = ({ route }) => {
+  return (
+    <ProgInfoView
+      sDim       = { screen }
+      wDim       = { window }
+      content = { route.params.content }
     />
   );
 }
@@ -304,7 +315,7 @@ const ComponentView = ({ route }) => {
           options   = {{ 
             headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
-                                title = 'Report' />,  
+                                title = 'Contact' />,  
           headerStyle : {
             backgroundColor : '#710000',
           },
@@ -343,12 +354,25 @@ const ComponentView = ({ route }) => {
           options       = {{ 
             headerTitle : () => <AppHeaderLogo 
                                   sDim  = { screen }
-                                  title = 'Program Offered' />,  
+                                  title = { route.params == undefined ? '' : route.params.title } />,  
             headerStyle : {
               backgroundColor : '#710000',
             },
             drawerItemStyle   : { display : 'none' }
           }} />
+        <Drawer.Screen 
+          name          = "ProgInfoView"
+          component     = { ProgIView }
+          initialParams = {{ content : route.params == undefined ? '' : route.params.content }}
+          options       = {{ 
+            headerTitle : () => <AppHeaderLogo 
+                                  sDim  = { screen }
+                                  title = { route.params == undefined ? '' : route.params.programTitle } />,  
+            headerStyle : {
+              backgroundColor : '#710000',
+            },
+            drawerItemStyle   : { display : 'none' }
+        }} />
         <Drawer.Screen 
           name      = "DeptView"
           component = { DepartmentView }
@@ -356,7 +380,7 @@ const ComponentView = ({ route }) => {
           options   = {{ 
             headerTitle : () => <AppHeaderLogo 
                                   sDim  = { screen }
-                                  title = 'Program Offered' />,  
+                                  title = { route.params == undefined ? '' : route.params.title } />,  
             headerStyle : {
               backgroundColor : '#710000',
             },

@@ -44,7 +44,7 @@ const readLocalFile = async (fileName) => {
 
 const getChapterName = async () => {
   try {
-    let result = await fetch(`http://192.168.1.6/evsu_handbook/api/get_handbook.php?chapter_list=1`);
+    let result = await fetch(`https://evsuhandbooksite.000webhostapp.com/sites/evsu_handbook/api/get_handbook.php?chapter_list=1`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
@@ -152,7 +152,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
           }}
           onChangeText = { setSearchText }
         />
-        <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} onPress = { useSearch }>
+        <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} pressable = { refresh ? false : true } onPress = { useSearch }>
           <FontAwesomeIcon icon={ faSearch } size = { sDim.height * 0.030 } color = '#710000' />
         </TouchableOpacity>
       </View>
