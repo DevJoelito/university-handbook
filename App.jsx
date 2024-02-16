@@ -13,6 +13,7 @@ import MissVissHymn from './components/MissVisHymn';
 import Events from './components/Events';
 import AboutUs from './components/AboutUs';
 import ChaptersView from './components/ChaptersView';
+import ChaptersViewCon from './components/sub/ChaptersViewCon';
 import MvhView from './components/MvhView';
 import MapCon from './components/MapCon'
 import ReportView from './components/ReportView';
@@ -147,6 +148,19 @@ const ChaptersViewView = ({ navigation, route }) => {
       chapterName = { route.params.title }
       chapterId   = { route.params.chapId }
       navigation  = { navigation }
+    />
+  );
+}
+
+const ChapterContentView = ({ navigation, route }) => {
+  return (
+    <ChaptersViewCon
+      sDim = { screen }
+      wDim = { window }
+      navigation = { navigation }
+      chapName = { route.params.title }
+      chapContent = { route.params.content }
+      chapWebContent = { route.params.web }
     />
   );
 }
@@ -341,6 +355,19 @@ const ComponentView = ({ route }) => {
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
                                 title = { route.params == undefined ? '' : route.params.title } />,  
+          headerStyle : {
+            backgroundColor : '#710000',
+          },
+          drawerItemStyle   : { display : 'none' }
+        }} />
+        <Drawer.Screen 
+          name          = "ChapterContView"
+          component     = { ChapterContentView }
+          initialParams = {{ title : route.params == undefined ? '' : route.params.chapName, content : route.params == undefined ? '' : route.params.chapContent, web : route.params == undefined ? '' : route.params.chapWebContent }}
+          options       = {{ 
+            headerTitle : () => <AppHeaderLogo 
+                                  sDim  = { screen }
+                                  title = { route.params == undefined ? '' : route.params.title } />,  
           headerStyle : {
             backgroundColor : '#710000',
           },

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, SafeAreaView, Modal, Image, TouchableOpacity, FlatList, RefreshControl, Text, ActivityIndicator } from 'react-native';
 import * as RNFS from 'react-native-fs';
-import ImageViewer from 'react-native-image-zoom-viewer';
 import { WebView } from 'react-native-webview';
 
 const writeLocal = async (fileName, content) => {

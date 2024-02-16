@@ -141,7 +141,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
         display           : 'flex',
         flexDirection     : 'row',
       }}>
-        <TextInput
+        {/* <TextInput
           style        = {{ 
             borderWidth     : 0.5,
             borderRadius    : 2, 
@@ -154,7 +154,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
         />
         <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} pressable = { refresh ? false : true } onPress = { useSearch }>
           <FontAwesomeIcon icon={ faSearch } size = { sDim.height * 0.030 } color = '#710000' />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 

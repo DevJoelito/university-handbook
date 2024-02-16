@@ -1,16 +1,14 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { TouchableOpacity, Text, View, ScrollView } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
-import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
-import { faVolumeDown } from '@fortawesome/free-solid-svg-icons/faVolumeDown';
-import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp';
+import React, { useState, useRef } from 'react';
+import { TextInput, TouchableOpacity, Text, View, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Tts from 'react-native-tts';
-import RenderHtml from 'react-native-render-html';
+import { WebView } from 'react-native-webview';
 
-const ChaptersViewCon = ({ wDim, sDim, title, article, webContent }) => {
-    let [down, setDown]   = useState(false);
+const ChaptersViewCon = ({ wDim, sDim, navigation, chapName, chapContent, chapWebContent }) => {
     let [speak, setSpeak] = useState(false);
+    let signal = useRef();
+    let css = '<meta name="viewport" content="width=device-width, initial-scale=1"/>';
+    let js = `<script>window.addEventListener("message", ({ data }) => { let back = false; if(data == 'back') back = true; window.find(string, false, back); })</script>`;
 
     const speakTheEvsu = async (voiceOn, text) => {
         try {
@@ -24,54 +22,66 @@ const ChaptersViewCon = ({ wDim, sDim, title, article, webContent }) => {
                 Tts.stop();
             }
         } catch (e) {}
-      }
+    }
 
     return (
-        <View style = {{
-            shadowColor      : '#000',
-            shadowOffset     : { width: 1, height: 1 },
-            shadowOpacity    : 3,
-            shadowRadius     : 10,
-            elevation        : 5,
-            paddingBottom    : 10,
-            backgroundColor  : '#F2F3F4',
-            marginHorizontal : (wDim.width * 0.02),
-            marginVertical   : (wDim.height * 0.005),
-            padding          : (wDim.height * 0.012),
-        }}>
-        <View style = {{ display : 'flex', flexDirection : 'row' }}>
-            <View style = {{ marginBottom : (wDim.height * 0.009), width : (wDim.width * 0.75) }}>
-                <Text style = {{ color : 'black', fontSize : (wDim.height * 0.025), textAlign: 'justify' }}>{ title }</Text>
+        <SafeAreaView style = {{ flex : 1 }}>
+            <View style = {{
+                flex : 1,
+                paddingBottom    : 10,
+                marginVertical   : (wDim.height * 0.005),
+                padding          : (wDim.height * 0.012),
+            }}>
+                <View style = {{ display : 'flex', flexDirection : 'row' }}>
+                    <View style = {{ marginBottom : (wDim.height * 0.009), width : (wDim.width * 0.75) }}>
+                        <Text style = {{ color : 'black', fontSize : (wDim.height * 0.025), textAlign: 'justify' }}>{ chapName  }</Text>
+                    </View>
+                    <View style = {{
+                        display        : 'flex',
+                        flexDirection  : 'row',
+                        alignItems     : 'center',
+                        justifyContent : 'center'
+                    }}>
+                        <Text style = {{ color : 'black' }}>Find: </Text>
+                        <TextInput 
+                        style = {{
+                            borderWidth  : 0.7,
+                            height       : 35,
+                            borderWidth  : 0.5,
+                            borderRadius : 0.5,
+                            width        : (wDim.width * 0.7),
+                            borderRadius : 0.5,
+                            fontSize     : 15,
+                            marginBottom : (wDim.height * 0.01), 
+                            color        : 'black',
+                            fontFamily   : 'Times New Roman'
+                        }} />
+                        <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} >
+                            {/* <FontAwesomeIcon icon={ faSearch } size = { sDim.height * 0.030 } color = '#710000' /> */}
+                        </TouchableOpacity>
+                        <View style = {{ 
+                        display        : 'flex',
+                        flexDirection  : 'row',
+                        justifyContent : 'center',
+                        alignItems     : 'center'
+                        }}>
+                        </View>
+                    </View>
+                </View>
+                <View style = {{
+                    borderWidth : 1,
+                    flex : 1,
+                    backgroundColor : 'transparent'
+                }}>
+                    <WebView
+                        ref = { signal }
+                        source           = {{ html : css + chapWebContent + js }}
+                        originWhitelist  = {['*']} 
+                        mixedContentMode = 'compatibility'
+                        style            = {{ flex : 1, backgroundColor : 'transparent' }} />
+                </View>
             </View>
-            <View style = {{ marginBottom : (wDim.height * 0.009), width : (wDim.width * 0.15), display : 'flex', flexDirection : 'row', justifyContent : 'space-around', alignItems : 'center' }}>
-                <TouchableOpacity onPress = { () => setDown(!down) }>
-                {
-                    down ? 
-                    <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.020 } color = '#822121' />
-                    :
-                    <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#822121' />
-                }
-                </TouchableOpacity>
-                <TouchableOpacity onPress = { () => { speakTheEvsu(!speak, article); setSpeak(!speak); } }>
-                {
-                    !speak ? 
-                    <FontAwesomeIcon icon={ faVolumeDown } size = { sDim.height * 0.020 } color = '#822121' />
-                    :
-                    <FontAwesomeIcon icon={ faVolumeUp } size = { sDim.height * 0.020 } color = '#822121' />
-                }
-                </TouchableOpacity>
-            </View>
-        </View>
-        <View style = {{ display : (down ? 'block' : 'none') }}>
-            <RenderHtml
-                source = {{ html : (webContent == null 
-                            ? '<style type="text/css">* { color : black; }</style><div style="text-align : center;">No content.</div>'
-                            : '<style type="text/css">* { color : black; }</style>' + webContent) }}
-                contentWidth = { wDim.width * 0.9 }
-                baseStyle    = {{ color : 'black' }}
-            />
-        </View>
-        </View>
+        </SafeAreaView>
     )
 }
 

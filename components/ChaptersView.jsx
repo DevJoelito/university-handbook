@@ -6,7 +6,6 @@ import * as RNFS from 'react-native-fs';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import ChaptersViewCon from './sub/ChaptersViewCon';
 
-
 const speakTheChapter = async (voiceOn, text) => {
   try {
     await Tts.getInitStatus();
@@ -17,7 +16,7 @@ const speakTheChapter = async (voiceOn, text) => {
       Tts.stop();
     }
   } catch(e) {
-    // Decided to leave it blank.
+    // Ehhy.
   }
 }
 
@@ -231,13 +230,28 @@ const ChaptersView = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
           : 
           <FlatList
             data       = { content }
-            renderItem = { ({ item }) => { return ( <ChaptersViewCon 
-                                                      wDim                = { wDim }
-                                                      sDim                = { sDim }
-                                                      title               = { item.name }
-                                                      webContent          = { item.web_content }
-                                                      article             = { item.content } /> ) } } 
-                                                      refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> } />
+            renderItem = { ({ item }) => { return ( 
+              <TouchableOpacity style = {{
+                shadowColor      : '#000',
+                shadowOffset     : { width: 1, height: 1 },
+                shadowOpacity    : 3,
+                shadowRadius     : 10,
+                elevation        : 5,
+                paddingBottom    : 10,
+                backgroundColor  : '#F2F3F4',
+                marginHorizontal : (wDim.width * 0.02),
+                marginVertical   : (wDim.height * 0.005),
+                padding          : (wDim.height * 0.012),
+            }} onPress = { () => navigation.navigate('ComponentView', { screen: 'ChapterContView', chapName: item.name, chapContent: item.content, chapWebContent: item.web_content }) }>
+            <View style = {{ display : 'flex', flexDirection : 'row' }}>
+                <View style = {{ marginBottom : (wDim.height * 0.009), width : (wDim.width * 0.75) }}>
+                    <Text style = {{ color : 'black', fontSize : (wDim.height * 0.025), textAlign: 'justify' }}>{ item.name }</Text>
+                </View>
+                <View style = {{ marginBottom : (wDim.height * 0.009), width : (wDim.width * 0.15), display : 'flex', flexDirection : 'row', justifyContent : 'space-around', alignItems : 'center' }}>
+                </View>
+            </View>
+            </TouchableOpacity> ) } } 
+            refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList } /> } />
         }
       </View>
     </SafeAreaView>

@@ -47,10 +47,10 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId, content }) 
           </View>
           <TouchableOpacity onPress = { () => setDown(!down) } style = {{ marginRight : (wDim.width * 0.028), position : 'absolute', right : (wDim.width * 0.008), top : (wDim.height * 0.008), padding : (wDim.height * 0.005) }}>
             {
-              down ? 
-              <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.020 } color = '#5d6d7e' />
-              :
-              <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#5d6d7e' />
+              // down ? 
+              // <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.020 } color = '#5d6d7e' />
+              // :
+              // <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#5d6d7e' />
             }
           </TouchableOpacity>
         </View>
