@@ -293,11 +293,11 @@ const ComponentView = ({ route }) => {
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
-                                title = 'Mission/Vission & Hymn' />,  
+                                title = 'Mission/Vision & Hymn' />,  
           headerStyle : {
             backgroundColor : '#710000',
           }, 
-          drawerLabel : 'Mission/Vission & Hymn'
+          drawerLabel : 'Mission/Vision & Hymn'
         }} />
       <Drawer.Screen 
         name      = "EventsView"
@@ -367,7 +367,7 @@ const ComponentView = ({ route }) => {
           options       = {{ 
             headerTitle : () => <AppHeaderLogo 
                                   sDim  = { screen }
-                                  title = { route.params == undefined ? '' : route.params.title } />,  
+                                  title = { (route.params == undefined ? '' : route.params.chapterName) + '/' + (route.params == undefined ? '' : route.params.chapName) } />,  
           headerStyle : {
             backgroundColor : '#710000',
           },

@@ -1,6 +1,12 @@
 import { Text, View, Image } from 'react-native';
 
 const AppHeaderLogo = ({ sDim, title }) => {
+  let fontSize = sDim.width * 0.055;
+  
+  if(title && title.length > 21) {
+    fontSize = sDim.width * 0.03
+  }
+
   return (
     <View style = {{ 
       flex           : 1, 
@@ -11,7 +17,7 @@ const AppHeaderLogo = ({ sDim, title }) => {
         position : 'absolute', 
         left     : ((sDim.width * 0.06) * -1) }}>
         <Text style = {{
-          fontSize   : (sDim.width * 0.055),
+          fontSize   : (fontSize),
           fontWeight : 'bold',
           color      : '#F4F6F6',
           fontFamily : 'times new roman'

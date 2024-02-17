@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, View, RefreshControl, TextInput, TouchableOpacity } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import HandBookChapterCon from './sub/HandBookChapterCon';
-import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import * as RNFS from 'react-native-fs';
 
 const writeLocal = async (fileName, content) => {
@@ -136,25 +134,10 @@ const HandBook = ({ navigation, sDim, wDim }) => {
         padding           : (wDim.height * 0.006),
         paddingLeft       : (wDim.height * 0.02),
         paddingRight      : (wDim.height * 0.02),        
-        borderBottomWidth : 0.7,
         borderColor       : '#949494',
         display           : 'flex',
         flexDirection     : 'row',
       }}>
-        {/* <TextInput
-          style        = {{ 
-            borderWidth     : 0.5,
-            borderRadius    : 2, 
-            flexGrow        : 1,
-            height          : (wDim.height * 0.048),
-            backgroundColor : '#faf5f5',
-            color           : 'black',
-          }}
-          onChangeText = { setSearchText }
-        />
-        <TouchableOpacity style = {{ display : 'flex', justifyContent : 'center', alignItems : 'center', paddingLeft : (wDim.width * 0.02), paddingRight : (wDim.width * 0.02) }} pressable = { refresh ? false : true } onPress = { useSearch }>
-          <FontAwesomeIcon icon={ faSearch } size = { sDim.height * 0.030 } color = '#710000' />
-        </TouchableOpacity> */}
       </View>
       <View style = {{ 
         paddingTop   : (sDim.width * 0.04), 

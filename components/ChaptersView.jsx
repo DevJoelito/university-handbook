@@ -4,21 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Tts from 'react-native-tts';
 import * as RNFS from 'react-native-fs';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
-import ChaptersViewCon from './sub/ChaptersViewCon';
-
-const speakTheChapter = async (voiceOn, text) => {
-  try {
-    await Tts.getInitStatus();
-  
-    if(voiceOn) {
-      Tts.speak(text);
-    } else {
-      Tts.stop();
-    }
-  } catch(e) {
-    // Ehhy.
-  }
-}
 
 const writeLocal = async (fileName, content) => {
   try {
@@ -173,7 +158,7 @@ const ChaptersView = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
             <TextInput 
               style = {{
                 borderWidth  : 0.7,
-                height       : 35,
+                height       : 40,
                 borderWidth  : 0.5,
                 borderRadius : 0.5,
                 width        : (wDim.width * 0.7),
@@ -242,7 +227,7 @@ const ChaptersView = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
                 marginHorizontal : (wDim.width * 0.02),
                 marginVertical   : (wDim.height * 0.005),
                 padding          : (wDim.height * 0.012),
-            }} onPress = { () => navigation.navigate('ComponentView', { screen: 'ChapterContView', chapName: item.name, chapContent: item.content, chapWebContent: item.web_content }) }>
+            }} onPress = { () => navigation.navigate('ComponentView', { screen: 'ChapterContView', chapName: item.name, chapContent: item.content, chapWebContent: item.web_content, chapterName }) }>
             <View style = {{ display : 'flex', flexDirection : 'row' }}>
                 <View style = {{ marginBottom : (wDim.height * 0.009), width : (wDim.width * 0.75) }}>
                     <Text style = {{ color : 'black', fontSize : (wDim.height * 0.025), textAlign: 'justify' }}>{ item.name }</Text>
