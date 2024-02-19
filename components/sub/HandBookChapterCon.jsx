@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons/faBookmark';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
-import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import RenderHtml from 'react-native-render-html';
 
 const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId, content }) => {
@@ -12,14 +10,14 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId, content }) 
   return (
     <TouchableOpacity 
       style = {{
-        backgroundColor : '#f3f3f3',
+        backgroundColor : '#F7EFEF',
         marginBottom    : (sDim.height * 0.01),
         flexDirection   : 'row',
         shadowColor     : '#000',
         shadowOffset    : { width: 1, height: 1 },
         shadowOpacity   : 10,
         shadowRadius    : 10,
-        elevation       : 2,
+        elevation       : 4,
       }}
       onPress = { () => navigation.navigate('ComponentView', { screen : 'ChaptersView', title, chapId }) }>
       <View style = {{ display : 'flex', justifyContent : 'center', width : '100%' }}>
@@ -45,16 +43,8 @@ const HandBookChapterCon = ({ navigation, title, sDim, wDim, chapId, content }) 
               </View>
             </View>
           </View>
-          <TouchableOpacity onPress = { () => setDown(!down) } style = {{ marginRight : (wDim.width * 0.028), position : 'absolute', right : (wDim.width * 0.008), top : (wDim.height * 0.008), padding : (wDim.height * 0.005) }}>
-            {
-              // down ? 
-              // <FontAwesomeIcon icon={ faChevronUp } size = { sDim.height * 0.020 } color = '#5d6d7e' />
-              // :
-              // <FontAwesomeIcon icon={ faChevronDown } size = { sDim.height * 0.020 } color = '#5d6d7e' />
-            }
-          </TouchableOpacity>
         </View>
-        <View style = {{ paddingTop : (wDim.height * 0.007), paddingBottom : (wDim.height * 0.01), paddingRight : (wDim.width * 0.015), paddingLeft : (wDim.width * 0.05), display : (down ? 'block' : 'none') }}>
+        <View style = {{ paddingTop : (wDim.height * 0.007), paddingBottom : (wDim.height * 0.01), paddingRight : (wDim.width * 0.015), paddingLeft : (wDim.width * 0.05) }}>
           <RenderHtml
             source = {{ html : (content == null 
                         ? '<style type="text/css">* { color : black; }</style><div style="text-align : center;">No content.</div>'
