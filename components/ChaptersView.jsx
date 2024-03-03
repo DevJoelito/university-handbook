@@ -214,7 +214,7 @@ const ChaptersView = ({ navigation, chapterName, chapterId, sDim, wDim }) => {
           </View>
           : 
           <FlatList
-            data       = { content }
+            data       = { content.sort() }
             renderItem = { ({ item }) => { return ( 
               <TouchableOpacity style = {{
                 shadowColor      : '#000',

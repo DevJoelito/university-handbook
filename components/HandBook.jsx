@@ -175,7 +175,7 @@ const HandBook = ({ navigation, sDim, wDim }) => {
           </View>
           :
           <FlatList
-            data       = { chapterNames }
+            data       = { chapterNames.sort() }
             renderItem = { ({ item }) => { return (<HandBookChapterCon 
                                                     navigation = { navigation }
                                                     title      = { item.chapter_name }

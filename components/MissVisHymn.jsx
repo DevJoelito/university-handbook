@@ -1,7 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { FlatList, SafeAreaView, Text, View, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
-import MissVisHymnContainer from './sub/MissVisHymnContainer';
+import { useState, useEffect } from 'react';
+import { SafeAreaView, Text, View, TouchableOpacity, ScrollView, Image } from 'react-native';
 import * as RNFS from 'react-native-fs';
+import SoundPlayer from 'react-native-sound-player'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp';
+import Tts from 'react-native-tts';
+import { faVolumeMute } from '@fortawesome/free-solid-svg-icons/faVolumeMute';
 
 const writeLocal = async (fileName, content) => {
   try {
@@ -40,20 +44,20 @@ const readLocalFile = async (fileName) => {
   }
 }
 
-const getMissVis = async () => {
+const getMissVis = async (id) => {
   try {
-    let result = await fetch(`https://evsuhandbooksite.000webhostapp.com/sites/evsu_handbook/api/get_handbook.php?dept_values=1`);
+    let result = await fetch(`https://evsuhandbooksite.000webhostapp.com/sites/evsu_handbook/api/get_handbook.php?dept_values=${id}`);
     let data   = await result.text();
 
     if(data == '__error__') return data;
 
     let objRes = JSON.parse(data);
 
-    if(!await writeLocal('dept_values.txt', data)) return objRes;
+    if(!await writeLocal(`dept_values_${id}.txt`, data)) return objRes;
 
     return objRes;
   } catch(e) {
-    let final = await readLocalFile('dept_values.txt');
+    let final = await readLocalFile(`dept_values_${id}.txt`);
 
     if(!final) return '__error__';
 
@@ -65,83 +69,160 @@ const getMissVis = async () => {
   }
 }
 
-const Links = ({ navigation, sDim, wDim }) => { 
-  let [missVis, setMissVis] = useState([]); 
-  let [refresh, setRefresh] = useState(true);
+const playSong = (play) => {
+  try {
+    SoundPlayer.loadSoundFile('evsu', 'mp3');
+
+    if(play) {
+      SoundPlayer.resume();
+    } else {
+      SoundPlayer.pause();
+    }
+  } catch(e) {
+    return false;
+  }
+
+  return true;
+}
+
+const speakTheEvsu = async (voiceOn, text) => {
+  await Tts.getInitStatus();
+
+  if(voiceOn) {
+    Tts.speak(text);
+  } else {
+    Tts.stop();
+  }
+}
+
+const Links = ({ navigation, sDim, wDim, deptId }) => { 
+  let [missVis, setMissVis] = useState([{mission: null, vision: null}]); 
+  let [play, setPlay]               = useState(false);
+  let [playMission, setPlayMission] = useState(false);
+  let [playVision, setPlayVision]   = useState(false);
 
   useEffect(() => {
     let unsubscribe = navigation.addListener('focus', async () => {
-      setMissVis(await getMissVis());
-      setRefresh(false);
+      setMissVis(await getMissVis(deptId));
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, deptId]);
 
   useEffect(() => {
     let blurListener = navigation.addListener('blur', async () => {
-      setMissVis([]);
-      setRefresh(true);
+      setMissVis([{mission: null, vision: null}]);
+    });
+
+    return blurListener;
+  }, [navigation, deptId]);
+
+  if(!playSong(play) && play) {
+    setPlay(false);
+  }
+
+  useEffect(() => {
+    let blurListener = navigation.addListener('blur', async () => {
+      setPlay(false);
+      setPlayMission(false);
+      setPlayVision(false);
+      SoundPlayer.pause();
+      Tts.stop();
     });
 
     return blurListener;
   }, [navigation]);
 
-  const refreshList = useCallback(async () => {
-    setRefresh(true);
-    setMissVis(await getMissVis());
-    setRefresh(false);
-  }, []);
-
   return (
     <SafeAreaView style = {{ flex : 1 }}>
-      <View style = {{ 
-        paddingTop   : (sDim.width * 0.04), 
-        paddingLeft  : (sDim.width * 0.01), 
-        paddingRight : (sDim.width * 0.01),
-        flex : 1 }} >
+      <ScrollView>
         {
-        (refresh) ?
-        <View style = {{
-            flex           : 1,
-            justifyContent : 'center', 
-            alignItems     : 'center'
-          }}>
-            <ActivityIndicator size="large" color="#900303" />
-        </View>
-        :
-        (missVis == '__error__') ?
-        <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }}>
-          <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>Something went wrong.</Text>
+          (missVis[0].mission != null && missVis[0].mission != '') ?
           <View>
-            <TouchableOpacity>
-              <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
-            </TouchableOpacity>
+            <Text style = {{ 
+              color      : 'black',
+              fontSize   : (wDim.height * 0.040),
+              textAlign  : 'center',
+              fontWeight : 'bold',
+              marginTop  : 8, 
+              position   : 'relative',
+              fontWeight : 800
+            }}>Mission</Text>
+            <View style = {{ alignItems : 'center', marginTop : (wDim.height * 0.005) }}>
+              {
+                (!playMission) ? 
+                <TouchableOpacity onPress = { () => { setPlayMission(!playMission); speakTheEvsu(!playMission, missVis[0].mission); } }>
+                  <FontAwesomeIcon icon = { faVolumeMute } size = { sDim.height * 0.04 } color='#710000' />
+                </TouchableOpacity>
+                :
+                <TouchableOpacity onPress = { () => { setPlayMission(!playMission); speakTheEvsu(!playMission, missVis[0].mission); } }>
+                  <FontAwesomeIcon icon = { faVolumeUp } size = { sDim.height * 0.04 } color='#710000' />
+                </TouchableOpacity>
+              }
+            </View>
+            <Text style = {{
+              textAlign     : 'center',
+              fontSize      : (wDim.height * 0.025),
+              color         : 'black',
+              marginTop     : (wDim.height * 0.015),
+              fontWeight    : 'bold',
+              paddingLeft   : (wDim.width * 0.018),
+              paddingRight  : (wDim.width * 0.018)
+            }}>
+              { missVis[0].mission }
+            </Text>
+          </View> 
+          :
+          <View style = {{ marginTop : (wDim.height * 0.015) }}>
+            <Text style={{ textAlign : 'center', color : 'black', fontSize : (wDim.height * 0.030), fontWeight : 800 }}>No Mission.</Text>
           </View>
-        </View> 
-        :
-        (!missVis.length) ? 
-        <View style = {{ flex : 1, justifyContent : 'center', alignItems : 'center' }}>
-          <Text style = {{ textAlign : 'center', color : 'black', fontWeight : 'bold', fontSize: 18 }}>No data found.</Text>
-          <View>
-            <TouchableOpacity>
-              <Text style = {{ color : '#5dade2', fontWeight : 'bold', textDecorationLine : 'underline', textAlign : 'center' }} onPress = { refreshList }>RELOAD</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        :
-        <FlatList
-          data       = { missVis }
-          renderItem = { ({ item }) => { return (<MissVisHymnContainer 
-                                                  navigation = { navigation }
-                                                  title      = { item.name }
-                                                  mission    = { item.mission }
-                                                  vision     = { item.vision }
-                                                  sDim       = { sDim }
-                                                  wDim       = { wDim } />) } }
-          refreshControl = { <RefreshControl refreshing = { refresh } onRefresh = { refreshList }/> } />  
         }
-      </View>
+        {
+          (missVis[0].vision != '' && missVis[0].vision != null) ?
+          <View style = {{ marginBottom : 20 }}>
+            <Text style = {{ 
+              color      : 'black',
+              fontSize   : (wDim.height * 0.040),
+              textAlign  : 'center',
+              fontWeight : 'bold',
+              marginTop  : 15, 
+              position   : 'relative', 
+              fontWeight : 800
+            }}>Vision</Text>
+            <View style = {{ alignItems : 'center', marginTop : (wDim.height * 0.005) }}>
+              {
+                (!playVision) ? 
+                <TouchableOpacity onPress = { () => { setPlayVision(!playVision); speakTheEvsu(!playVision, missVis[0].vision); } }>
+                  <FontAwesomeIcon icon = { faVolumeMute } size = { sDim.height * 0.04 } color='#710000' />
+                </TouchableOpacity>
+                :
+                <TouchableOpacity onPress = { () => { setPlayVision(!playVision); speakTheEvsu(!playVision, missVis[0].vision) } }>
+                  <FontAwesomeIcon icon = { faVolumeUp } size = { sDim.height * 0.04 } color='#710000' />
+                </TouchableOpacity>
+              }
+            </View>
+            <Text style = {{
+              textAlign    : 'center',
+              fontSize     : (wDim.height * 0.025),
+              color        : 'black',
+              marginTop    : (wDim.height * 0.015),
+              fontWeight   : 'bold',
+              paddingLeft  : (wDim.width * 0.018),
+              paddingRight : (wDim.width * 0.018)
+            }}>
+              { missVis[0].vision }
+            </Text>
+          </View>
+          :
+          <View style = {{ marginTop : (wDim.height * 0.015) }}>
+            <Text style={{ textAlign : 'center', color : 'black', fontSize : (wDim.height * 0.030), fontWeight : 800 }}>No Vision.</Text>
+          </View>
+        }
+      </ScrollView>
+      <Image
+          style  = {{ width : (wDim.width * 0.48), height : (wDim.width * 0.48), alignSelf : 'center', top : (wDim.height * 0.32), opacity : 0.2, position : 'absolute' }}
+          source = { require('../assets/images/the-evsu-logo.png') }
+        />
     </SafeAreaView>
   );
 }

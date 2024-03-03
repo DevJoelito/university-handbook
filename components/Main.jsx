@@ -70,8 +70,8 @@ const Main = ({ navigation, sDim, wDim }) => {
               sDim       = { sDim } 
               wDim       = { wDim } 
               icon       = { faGraduationCap } 
-              title      = 'Mission/Vission & Hymn'
-              navTitle   = 'MissVissHymnView' />
+              title      = 'Mission/Vision'
+              navTitle   = 'MissVisCamp' />
           </View>
 
           <View style = { styles.subConProps }>

@@ -100,7 +100,7 @@ const triggerNotif =  (notifCount, notifType, navigation) => {
     id,
     title      : "EVSU handbook",
     message    : notifCount + " " + notifMess,
-    date       : new Date(Date.now() + (60 * 1000))
+    date       : new Date(Date.now() + (60 * 360000))
   });
 }
 

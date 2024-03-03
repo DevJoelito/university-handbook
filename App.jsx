@@ -5,7 +5,10 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import Main from './components/Main';
 import HandBook from './components/HandBook';
 import DeptView from './components/DeptView';
+import MissVisDeptView from './components/MissVisDeptView';
 import ProgOfferedView from './components/ProgOfferedView';
+import MissVisProgOfferedView from './components/MissVisProgOfferedView';
+import MissVisCampusView from './components/MissVisCampusView';
 import CampusView from './components/CampusView';
 import Map from './components/Map';
 import Links from './components/Links';
@@ -57,6 +60,16 @@ const CampusesView = ({ navigation }) => {
   );
 }
 
+const MissVisCampusesView = ({ navigation }) => {
+  return (
+    <MissVisCampusView 
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
+    />
+  );
+}
+
 const DepartmentView = ({ navigation, route }) => {
   return (
     <DeptView 
@@ -68,9 +81,32 @@ const DepartmentView = ({ navigation, route }) => {
   );
 }
 
+const MissVisDepartmentView = ({ navigation, route }) => {
+  return (
+    <MissVisDeptView 
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
+      campId     = { route.params.campId }
+    />
+  );
+}
+
 const ProgramOfferedView = ({ navigation, route }) => {
   return (
     <ProgOfferedView 
+      sDim       = { screen }
+      wDim       = { window }
+      navigation = { navigation }
+      deptId     = { route.params.deptId }
+      deptImg    = { route.params.deptImg }
+    />
+  );
+}
+
+const MissVisProgramOfferedView = ({ navigation, route }) => {
+  return (
+    <MissVisProgOfferedView 
       sDim       = { screen }
       wDim       = { window }
       navigation = { navigation }
@@ -110,12 +146,13 @@ const LinkView = ({ navigation }) => {
   );
 }
 
-const MissVissHymnView = ({ navigation }) => {
+const MissVissHymnView = ({ navigation, route }) => {
   return (
     <MissVissHymn 
       sDim       = { screen }
       wDim       = { window }
       navigation = { navigation }
+      deptId = { route.params.deptId }
     />
   );
 }
@@ -211,7 +248,7 @@ const ContactUsViewView = ({ navigation }) => {
 const ComponentView = ({ route }) => {
   return (
     <Drawer.Navigator 
-      backBehavior = 'firstRoute'
+      backBehavior = "history"
       screenOptions      = {{ 
         drawerItemStyle : {
           opacity          : 0.9,
@@ -239,7 +276,7 @@ const ComponentView = ({ route }) => {
           headerShown : false,
         }} />
       <Drawer.Screen 
-        name      = "HandBookView"
+        name = "HandBookView"
         component = { HandBookView } 
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
@@ -253,7 +290,6 @@ const ComponentView = ({ route }) => {
       <Drawer.Screen 
         name      = "CampusesView"
         component = { CampusesView }
-        backBehavior = 'firstRoute'
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
@@ -290,14 +326,15 @@ const ComponentView = ({ route }) => {
       <Drawer.Screen 
         name      = "MissVissHymnView"
         component = { MissVissHymnView }
+        initialParams = {{ deptId : route.params == undefined ? '' : route.params.deptId }}
         options   = {{ 
           headerTitle : () => <AppHeaderLogo 
                                 sDim  = { screen }
-                                title = 'Mission/Vision & Hymn' />,  
+                                title = 'Mission/Vision' />,  
           headerStyle : {
             backgroundColor : '#710000',
           }, 
-          drawerLabel : 'Mission/Vision & Hymn'
+          drawerLabel : 'Mission/Vision'
         }} />
       <Drawer.Screen 
         name      = "EventsView"
@@ -348,7 +385,7 @@ const ComponentView = ({ route }) => {
           drawerItemStyle   : { display : 'none' }
         }} />
       <Drawer.Screen 
-        name          = "ChaptersView"
+        name = "ChaptersView"
         component     = { ChaptersViewView }
         initialParams = {{ title : route.params == undefined ? '' : route.params.title, chapId : route.params == undefined ? '' : route.params.chapId }}
         options       = {{ 
@@ -361,7 +398,7 @@ const ComponentView = ({ route }) => {
           drawerItemStyle   : { display : 'none' }
         }} />
         <Drawer.Screen 
-          name          = "ChapterContView"
+          name = "ChapterContView"
           component     = { ChapterContentView }
           initialParams = {{ title : route.params == undefined ? '' : route.params.chapName, content : route.params == undefined ? '' : route.params.chapContent, web : route.params == undefined ? '' : route.params.chapWebContent }}
           options       = {{ 
@@ -443,6 +480,45 @@ const ComponentView = ({ route }) => {
               },
               drawerItemStyle   : { display : 'none' }
           }} />
+          <Drawer.Screen 
+            name      = "MissVisCamp"
+            component = { MissVisCampusesView }
+            options   = {{ 
+              headerTitle : () => <AppHeaderLogo 
+                                    sDim  = { screen }
+                                    title = 'Mission/Vision' />,  
+              headerStyle : {
+                backgroundColor : '#710000',
+              },
+              drawerItemStyle   : { display : 'none' }
+            }} />
+            <Drawer.Screen 
+              name      = "MissVisDept"
+              component = { MissVisDepartmentView }
+              initialParams = {{ campId : route.params == undefined ? '' : route.params.campId }}
+              options   = {{ 
+                headerTitle : () => <AppHeaderLogo 
+                                      sDim  = { screen }
+                                      title = { route.params == undefined ? '' : route.params.title } />,  
+                headerStyle : {
+                  backgroundColor : '#710000',
+                },
+                drawerItemStyle   : { display : 'none' }
+            }} />
+            <Drawer.Screen 
+              name          = "MissVisProgOfferedView"
+              component     = { MissVisProgramOfferedView }
+              initialParams = {{ deptId : route.params == undefined ? '' : route.params.deptId,
+                                deptImg : route.params == undefined ? '' : route.params.deptImg }}
+              options       = {{ 
+                headerTitle : () => <AppHeaderLogo 
+                                      sDim  = { screen }
+                                      title = { route.params == undefined ? '' : route.params.title } />,  
+                headerStyle : {
+                  backgroundColor : '#710000',
+                },
+                drawerItemStyle   : { display : 'none' }
+            }} />
     </Drawer.Navigator>
   )
 }
